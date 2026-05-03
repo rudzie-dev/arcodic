@@ -253,8 +253,8 @@ const CSS = `
     font-family: var(--ui); font-size: 11px; font-weight: 600;
     letter-spacing: .2em; text-transform: uppercase;
     color: rgba(255,255,255,.26); margin-bottom: 28px;
-    opacity: 0;
-    animation: rise .6s 1.05s var(--ease-out) forwards;
+    opacity: 1;
+    animation: wordmarkIn .6s var(--ease-out) forwards;
   }
   .hero-wordmark {
     font-family: var(--logo);
@@ -268,13 +268,13 @@ const CSS = `
     width: 100%; height: 1px;
     background: rgba(255,255,255,.07);
     margin: 52px 0 44px;
-    opacity: 0; transform-origin: left;
-    animation: expandRule .7s 1.62s var(--ease-out) forwards;
+    opacity: 1; transform-origin: left;
+    animation: expandRule .7s var(--ease-out) forwards;
   }
   .hero-foot {
     display: flex; align-items: flex-end; justify-content: space-between;
-    opacity: 0;
-    animation: rise .7s 1.75s var(--ease-out) forwards;
+    opacity: 1;
+    animation: wordmarkIn .7s var(--ease-out) forwards;
   }
   .hero-desc {
     font-family: var(--ui); font-size: 17px; font-weight: 400;
@@ -543,7 +543,7 @@ const CSS = `
   /* ─── KEYFRAMES ─────────────────────────── */
   @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
-  @keyframes expandRule  { from { opacity:0; transform:scaleX(0); }        to { opacity:1; transform:scaleX(1); }    }
+  @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
   @keyframes spin        { to { transform:rotate(360deg); }                                                           }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
   @keyframes glowPulse   { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 28px rgba(214,52,8,.55),0 0 8px rgba(214,52,8,.3)} }
