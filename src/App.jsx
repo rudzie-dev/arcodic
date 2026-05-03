@@ -17,7 +17,7 @@ const CSS = `
   /* Fonts loaded via <link> in index.html for non-blocking render */
   @font-face {
     font-family: 'Godber';
-    src: url('/fonts/godber.ttf') format('truetype');
+    src: url('/fonts/godber.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
