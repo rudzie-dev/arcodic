@@ -708,7 +708,7 @@ export default function App() {
 
       <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero">
-        <p className="hero-kicker">Digital Studio — South Africa</p>
+        <p className="hero-kicker">Digital Studio — Est. 2025</p>
         <div className="hero-wordmark">ARCODIC</div>
         <div className="hero-rule" />
         <div className="hero-foot">
@@ -837,7 +837,7 @@ export default function App() {
         <div>
           <div className="f-wordmark">ARCODIC</div>
           <p className="f-about">
-            Digital studio. South Africa.<br />
+            Digital studio. Global reach.<br />
             Built fast, built right.
           </p>
         </div>
@@ -868,7 +868,7 @@ export default function App() {
       </footer>
       <div className="f-base">
         <span className="f-copy">© 2025 ARcodic. All rights reserved.</span>
-        <span className="f-copy">Durban, South Africa</span>
+        <span className="f-copy">hello@arcodic.com</span>
       </div>
     </>
   );
