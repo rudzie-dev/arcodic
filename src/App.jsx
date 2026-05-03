@@ -251,7 +251,7 @@ const CSS = `
   .hero-kicker {
     font-family: var(--ui); font-size: 11px; font-weight: 600;
     letter-spacing: .2em; text-transform: uppercase;
-    color: rgba(255,255,255,.26); margin-bottom: 28px;
+    color: rgba(255,255,255,.55); margin-bottom: 28px;
     opacity: 1;
     animation: wordmarkIn .6s var(--ease-out) forwards;
   }
@@ -277,7 +277,7 @@ const CSS = `
   }
   .hero-desc {
     font-family: var(--ui); font-size: 17px; font-weight: 400;
-    line-height: 1.68; color: rgba(255,255,255,.4); max-width: 400px;
+    line-height: 1.68; color: rgba(255,255,255,.6); max-width: 400px;
   }
   .hero-desc b { color: rgba(255,255,255,.8); font-weight: 600; }
 
@@ -330,7 +330,7 @@ const CSS = `
   .section-kicker {
     font-family: var(--ui); font-size: 11px; font-weight: 600;
     letter-spacing: .2em; text-transform: uppercase;
-    color: rgba(255,255,255,.22); margin-bottom: 52px;
+    color: rgba(255,255,255,.5); margin-bottom: 52px;
   }
 
   /*
@@ -353,7 +353,7 @@ const CSS = `
   .project-tag {
     font-family: var(--ui); font-size: 11px; font-weight: 500;
     letter-spacing: .1em; text-transform: uppercase;
-    color: rgba(255,255,255,.22); width: 180px; flex-shrink: 0;
+    color: rgba(255,255,255,.5); width: 180px; flex-shrink: 0;
     transition: color .3s ease;
   }
   .project-row:hover .project-tag { color: rgba(255,255,255,.4); }
@@ -362,13 +362,13 @@ const CSS = `
     font-family: var(--serif);
     font-size: clamp(26px, 3.2vw, 46px);
     font-weight: 300; font-style: italic;
-    color: rgba(255,255,255,.78); flex: 1; letter-spacing: -.015em;
+    color: rgba(255,255,255,.88); flex: 1; letter-spacing: -.015em;
     transition: color .3s ease;
   }
   .project-row:hover .project-name { color: #fff; }
 
   .project-arrow {
-    color: rgba(255,255,255,.18); font-size: 18px; flex-shrink: 0;
+    color: rgba(255,255,255,.45); font-size: 18px; flex-shrink: 0;
     transition: color .3s ease, transform .55s var(--ease-spring);
   }
   .project-row:hover .project-arrow { color: var(--red); transform: translateX(5px); }
@@ -435,7 +435,7 @@ const CSS = `
     font-family: var(--serif);
     font-size: clamp(20px, 2vw, 28px);
     font-weight: 300; font-style: italic;
-    color: rgba(255,255,255,.75);
+    color: rgba(255,255,255,.9);
     position: relative; z-index: 1;
     transition: color .3s ease;
   }
@@ -482,7 +482,7 @@ const CSS = `
   .cta-h em { font-style: italic; color: rgba(255,255,255,.35); }
   .cta-sub {
     font-family: var(--ui); font-size: 16px; font-weight: 400;
-    color: rgba(255,255,255,.38); line-height: 1.65;
+    color: rgba(255,255,255,.6); line-height: 1.65;
     margin-bottom: 48px; max-width: 320px;
     margin-left: auto; margin-right: auto;
     position: relative;
@@ -501,7 +501,7 @@ const CSS = `
   .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 18px; }
   .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
   .f-links a  {
-    font-family: var(--ui); font-size: 14px; color: rgba(255,255,255,.35);
+    font-family: var(--ui); font-size: 14px; color: rgba(255,255,255,.6);
     text-decoration: none; display: inline-block; position: relative;
     transition: color .22s ease;
   }
@@ -706,7 +706,7 @@ export default function App() {
         </nav>
       </div>
 
-      {/* ── HERO ─────────────────────────────── */}
+      <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero">
         <p className="hero-kicker">Digital Studio — South Africa</p>
         <div className="hero-wordmark">ARCODIC</div>
@@ -830,6 +830,8 @@ export default function App() {
         </div>
       </section>
 
+      </main>
+
       {/* ── FOOTER ───────────────────────────── */}
       <footer>
         <div>
@@ -842,8 +844,8 @@ export default function App() {
         <div>
           <div className="f-h">Studio</div>
           <ul className="f-links">
-            {["Work", "Process", "About", "24H Sprint"].map(l => (
-              <li key={l}><a href="#">{l}</a></li>
+            {[["Work","#work"],["Process","#sprint"],["About","#contact"],["24H Sprint","#sprint"]].map(([l,h]) => (
+              <li key={l}><a href={h}>{l}</a></li>
             ))}
           </ul>
         </div>
@@ -851,15 +853,15 @@ export default function App() {
           <div className="f-h">Services</div>
           <ul className="f-links">
             {["Full-Stack Dev", "UI Architecture", "SEO Strategy", "Motion Design"].map(l => (
-              <li key={l}><a href="#">{l}</a></li>
+              <li key={l}><a href="#contact">{l}</a></li>
             ))}
           </ul>
         </div>
         <div>
           <div className="f-h">Contact</div>
           <ul className="f-links">
-            {["hello@arcodic.com", "WhatsApp", "Instagram", "Book a call"].map(l => (
-              <li key={l}><a href="#">{l}</a></li>
+            {[["hello@arcodic.com","mailto:hello@arcodic.com"],["WhatsApp","https://wa.me/27676502266"],["Instagram","https://instagram.com/arcodic.studio"],["Book a call","https://wa.me/27676502266"]].map(([l,h]) => (
+              <li key={l}><a href={h}>{l}</a></li>
             ))}
           </ul>
         </div>
