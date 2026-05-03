@@ -7,8 +7,12 @@
     <meta name="description" content="ARcodic is a digital studio building high-performance websites for brands that refuse to blend in. 24-hour sprint delivery." />
     <meta name="theme-color" content="#121009" />
 
-    <!-- Zero external requests — all fonts self-hosted in /public/fonts -->
+    <!-- Preload fonts so they fetch in parallel with HTML, not after JS -->
+    <link rel="preload" href="/fonts/fonts.css" as="style" />
     <link rel="preload" href="/fonts/godber.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Apply fonts.css non-blocking -->
+    <link rel="stylesheet" href="/fonts/fonts.css" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
