@@ -14,7 +14,8 @@ import { useState, useEffect } from "react";
 // ─── All CSS lives here — kept in one file intentionally for this
 //     single-component site. Sections are clearly labelled.
 const CSS = `
-  /* Fonts loaded via <link> in index.html for non-blocking render */
+  @import url('/fonts/fonts.css');
+  /* Godber — self-hosted woff2 */
   @font-face {
     font-family: 'Godber';
     src: url('/fonts/godber.woff2') format('woff2');
