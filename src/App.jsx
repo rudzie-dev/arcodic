@@ -38,8 +38,8 @@ const CSS = `
     --dim:    #878075;
     --line:   rgba(18,16,9,.07);
     --red:    #D63408;
-    --serif:  'Fraunces', Georgia, serif;
-    --ui:     'Syne', sans-serif;
+    --serif:  Georgia, 'Times New Roman', serif;
+    --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --logo:   'Godber', sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
