@@ -260,8 +260,9 @@ const CSS = `
     font-family: var(--logo);
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
-    opacity: 0;
-    animation: rise 1s 1.2s var(--ease-out) forwards;
+    /* opacity:1 immediately so browser registers LCP at paint time */
+    opacity: 1;
+    animation: wordmarkIn .9s var(--ease-out) forwards;
   }
   .hero-rule {
     width: 100%; height: 1px;
@@ -541,6 +542,7 @@ const CSS = `
 
   /* ─── KEYFRAMES ─────────────────────────── */
   @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
   @keyframes expandRule  { from { opacity:0; transform:scaleX(0); }        to { opacity:1; transform:scaleX(1); }    }
   @keyframes spin        { to { transform:rotate(360deg); }                                                           }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
@@ -652,11 +654,11 @@ export default function App() {
 
   // Dock: circle → pill → brief breathe pulse
   useEffect(() => {
-    const t1 = setTimeout(() => setOpen(true), 950);
+    const t1 = setTimeout(() => setOpen(true), 0);
     const t2 = setTimeout(() => {
       setBreathe(true);
       setTimeout(() => setBreathe(false), 700);
-    }, 1750);
+    }, 800);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
