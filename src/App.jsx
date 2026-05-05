@@ -38,7 +38,7 @@ const CSS = `
     --dim:    #878075;
     --line:   rgba(18,16,9,.07);
     --red:    #D63408;
-    --serif:  Georgia, 'Times New Roman', serif;
+    --serif:  var(--ui); /* deprecated — use --ui directly */
     --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --logo:   'Godber', sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
@@ -312,12 +312,12 @@ const CSS = `
     border-bottom: 1px solid var(--line);
   }
   .statement-h {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(38px, 5.2vw, 76px);
-    font-weight: 300; line-height: 1.08; letter-spacing: -.022em;
+    font-weight: 500; line-height: 1.08; letter-spacing: -.022em;
     max-width: 840px;
   }
-  .statement-h em { font-style: italic; color: var(--dim); }
+  .statement-h em { font-style: normal; font-weight: 400; color: var(--dim); }
   .statement-foot { display: flex; justify-content: flex-end; margin-top: 52px; }
   .statement-note {
     font-family: var(--ui); font-size: 15px; font-weight: 400;
@@ -359,9 +359,9 @@ const CSS = `
   .project-row:hover .project-tag { color: rgba(255,255,255,.4); }
 
   .project-name {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(26px, 3.2vw, 46px);
-    font-weight: 300; font-style: italic;
+    font-weight: 500; font-style: italic;
     color: rgba(255,255,255,.88); flex: 1; letter-spacing: -.015em;
     transition: color .3s ease;
   }
@@ -392,11 +392,11 @@ const CSS = `
   .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim); }
   .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
   .sprint-h {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(30px, 3.8vw, 50px);
-    font-weight: 300; line-height: 1.12; letter-spacing: -.02em; color: var(--ink);
+    font-weight: 500; line-height: 1.12; letter-spacing: -.02em; color: var(--ink);
   }
-  .sprint-h em { font-style: italic; color: var(--dim); }
+  .sprint-h em { font-style: normal; font-weight: 400; color: var(--dim); }
   .sprint-body { font-family: var(--ui); font-size: 16px; line-height: 1.72; color: var(--dim); max-width: 400px; }
 
   /* ─── CONTACT ───────────────────────────── */
@@ -432,7 +432,7 @@ const CSS = `
   .contact-card:active { transform: scale(.98); }
 
   .contact-platform {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(20px, 2vw, 28px);
     font-weight: 300; font-style: italic;
     color: rgba(255,255,255,.9);
@@ -518,17 +518,17 @@ const CSS = `
     margin-left: 8px;
   }
   .pricing-name {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(22px, 2.5vw, 32px);
-    font-weight: 300;
+    font-weight: 600;
     line-height: 1.1;
     color: var(--ink);
   }
   .pricing-card.featured .pricing-name { color: #fff; }
   .pricing-price {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(28px, 3.5vw, 44px);
-    font-weight: 300;
+    font-weight: 700;
     line-height: 1;
     color: var(--ink);
     letter-spacing: -.02em;
@@ -568,12 +568,9 @@ const CSS = `
 
   @media (max-width: 768px) {
     .pricing-section { padding: 56px 24px; }
-    .pricing-grid { grid-template-columns: repeat(3, 1fr); border-radius: 12px; }
-    .pricing-card { padding: 24px 16px; gap: 12px; }
-    .pricing-name { font-size: 16px; }
-    .pricing-price { font-size: 20px; }
-    .pricing-desc { font-size: 11px; }
-    .pricing-meta { font-size: 9px; }
+    .pricing-grid { grid-template-columns: 1fr; border-radius: 14px; }
+    .pricing-card { padding: 36px 28px; }
+    .pricing-card.featured { order: -1; }
   }
 
   /* ─── CTA ───────────────────────────────── */
@@ -590,12 +587,12 @@ const CSS = `
     pointer-events: none;
   }
   .cta-h {
-    font-family: var(--serif);
+    font-family: var(--ui);
     font-size: clamp(50px, 8vw, 116px);
-    font-weight: 300; line-height: .95; letter-spacing: -.03em;
+    font-weight: 600; line-height: .95; letter-spacing: -.03em;
     color: #fff; margin-bottom: 32px; position: relative;
   }
-  .cta-h em { font-style: italic; color: rgba(255,255,255,.35); }
+  .cta-h em { font-style: normal; font-weight: 400; color: rgba(255,255,255,.35); }
   .cta-sub {
     font-family: var(--ui); font-size: 16px; font-weight: 400;
     color: rgba(255,255,255,.6); line-height: 1.65;
