@@ -460,6 +460,115 @@ const CSS = `
   .contact-card:hover .ca-rest  { opacity: 0; }
   .contact-card:hover .ca-hover { opacity: 1; }
 
+
+  /* ─── PRICING ───────────────────────────── */
+  .pricing-section {
+    background: var(--paper);
+    color: var(--ink);
+    padding: 96px 64px;
+    border-bottom: 1px solid var(--line);
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 52px;
+  }
+  .pricing-card {
+    background: var(--paper);
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: background .25s ease;
+    position: relative;
+  }
+  .pricing-card:hover { background: #EDE9E2; }
+  .pricing-card.featured {
+    background: var(--ink);
+  }
+  .pricing-card.featured:hover { background: #1d1a16; }
+  .pricing-tag {
+    font-family: var(--ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .pricing-card.featured .pricing-tag { color: rgba(255,255,255,.4); }
+  .pricing-tag-pill {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-family: var(--ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+  .pricing-name {
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .pricing-card.featured .pricing-name { color: #fff; }
+  .pricing-price {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 300;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -.02em;
+  }
+  .pricing-card.featured .pricing-price { color: #fff; }
+  .pricing-price span {
+    font-family: var(--ui);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--dim);
+    letter-spacing: 0;
+  }
+  .pricing-card.featured .pricing-price span { color: rgba(255,255,255,.4); }
+  .pricing-divider {
+    height: 1px;
+    background: var(--line);
+  }
+  .pricing-card.featured .pricing-divider { background: rgba(255,255,255,.08); }
+  .pricing-desc {
+    font-family: var(--ui);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--dim);
+    flex: 1;
+  }
+  .pricing-card.featured .pricing-desc { color: rgba(255,255,255,.5); }
+  .pricing-meta {
+    font-family: var(--ui);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+  .pricing-card.featured .pricing-meta { color: rgba(255,255,255,.35); }
+
+  @media (max-width: 768px) {
+    .pricing-section { padding: 56px 24px; }
+    .pricing-grid { grid-template-columns: 1fr; border-radius: 14px; }
+    .pricing-card { padding: 36px 28px; }
+    .pricing-card.featured { order: -1; }
+  }
+
   /* ─── CTA ───────────────────────────────── */
   .cta-section {
     background: var(--ink); padding: 132px 64px;
@@ -785,6 +894,51 @@ export default function App() {
             Book a sprint
           </a>
         </div>
+      </section>
+
+
+      {/* ── PRICING ─────────────────────────── */}
+      <section className="pricing-section">
+        <p className="section-kicker r" style={{color:'var(--dim)'}}>What it costs</p>
+        <h2 className="s-h2 r" style={{color:'var(--ink)'}}>
+          Transparent.<br /><em>No surprises.</em>
+        </h2>
+        <div className="pricing-grid r d1">
+          {[
+            {
+              tag: "Entry", name: "Landing Page", price: "R1,500", priceEnd: "– R2,500",
+              desc: "One page. One goal. Built around a single conversion — a call, a WhatsApp, a booking.",
+              meta: "1–2 day turnaround", featured: false,
+            },
+            {
+              tag: "Most Popular", name: "Starter Site", price: "R3,500", priceEnd: "– R5,500",
+              desc: "A proper multi-page site with navigation. Everything a local business needs to be taken seriously online.",
+              meta: "3–5 day turnaround", featured: true,
+            },
+            {
+              tag: "Full Build", name: "Business Site", price: "R6,000", priceEnd: "– R10,000",
+              desc: "Built for growth. Bookings, galleries, animations, analytics — a real competitive advantage.",
+              meta: "1–2 week turnaround", featured: false,
+            },
+          ].map((p, i) => (
+            <div key={i} className={`pricing-card${p.featured ? " featured" : ""}`}>
+              <div className="pricing-tag">
+                {p.tag}
+                {p.featured && <span className="pricing-tag-pill">Popular</span>}
+              </div>
+              <div className="pricing-name">{p.name}</div>
+              <div className="pricing-price">
+                {p.price}<span>{p.priceEnd}</span>
+              </div>
+              <div className="pricing-divider" />
+              <p className="pricing-desc">{p.desc}</p>
+              <p className="pricing-meta">{p.meta}</p>
+            </div>
+          ))}
+        </div>
+        <p className="r d2" style={{fontFamily:'var(--ui)',fontSize:'13px',color:'var(--dim)',marginTop:'32px',textAlign:'center'}}>
+          Need something bigger? <a href="#contact" style={{color:'var(--ink)',textDecoration:'none',borderBottom:'1px solid var(--line)'}}>Let's talk custom.</a>
+        </p>
       </section>
 
       {/* ── CONTACT ──────────────────────────── */}
