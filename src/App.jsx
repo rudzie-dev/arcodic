@@ -620,9 +620,9 @@ const CSS = `
 
 // ─── DATA ────────────────────────────────────────────────────────
 const DEMOS = [
-  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 in name search · #3 near me · AI Overview · 17 reviews · 5.0★" },
-  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · Menu & WhatsApp ordering · SEO in progress" },
-  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "Demo — hospitality booking UI" },
+  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 name search · #3 near me · AI Overview · 5.0★ · 17 reviews" },
+  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · WhatsApp ordering · Local SEO active" },
+  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "UI concept · Hospitality booking flow" },
 ];
 
 const CONTACTS = [
