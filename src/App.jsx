@@ -620,9 +620,9 @@ const CSS = `
 
 // ─── DATA ────────────────────────────────────────────────────────
 const DEMOS = [
-  { tag: "Luxury Hospitality", name: "Noir Atelier",     href: "https://lumiere-salon.arcodic.com" },
-  { tag: "Boutique Coffee",    name: "Roast & Ritual",   href: "https://ritual-coffee.arcodic.com" },
-  { tag: "Technical Services", name: "MG Installations", href: "https://mg-installations.arcodic.com" },
+  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 in name search · #3 near me · AI Overview · 17 reviews · 5.0★" },
+  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · Menu & WhatsApp ordering · SEO in progress" },
+  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "Demo — hospitality booking UI" },
 ];
 
 const CONTACTS = [
@@ -752,7 +752,10 @@ export default function App() {
             className={`project-row r d${i + 1}`}
           >
             <span className="project-tag">{d.tag}</span>
-            <span className="project-name">{d.name}</span>
+            <div style={{flex:1}}>
+              <span className="project-name">{d.name}</span>
+              {d.result && <p style={{fontFamily:'var(--ui)',fontSize:'11px',color:'rgba(255,255,255,.35)',marginTop:'4px',letterSpacing:'.04em'}}>{d.result}</p>}
+            </div>
             <span className="project-arrow">→</span>
           </a>
         ))}
