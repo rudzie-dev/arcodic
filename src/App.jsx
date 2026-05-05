@@ -381,7 +381,7 @@ const CSS = `
   }
   .sprint-left {
     padding: 96px 64px; border-right: 1px solid var(--line);
-    display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 16px;
   }
   .sprint-num {
     font-family: var(--logo);
@@ -471,11 +471,12 @@ const CSS = `
   .pricing-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--line);
+    gap: 0;
+    background: transparent;
     border-radius: 16px;
     overflow: hidden;
     margin-top: 52px;
+    border: 1px solid var(--line);
   }
   .pricing-card {
     background: var(--paper);
@@ -485,10 +486,13 @@ const CSS = `
     gap: 20px;
     transition: background .25s ease;
     position: relative;
+    border: 1px solid var(--line);
+    margin: -1px;
   }
   .pricing-card:hover { background: #EDE9E2; }
   .pricing-card.featured {
     background: var(--ink);
+    border-color: var(--ink);
   }
   .pricing-card.featured:hover { background: #1d1a16; }
   .pricing-tag {
@@ -564,9 +568,12 @@ const CSS = `
 
   @media (max-width: 768px) {
     .pricing-section { padding: 56px 24px; }
-    .pricing-grid { grid-template-columns: 1fr; border-radius: 14px; }
-    .pricing-card { padding: 36px 28px; }
-    .pricing-card.featured { order: -1; }
+    .pricing-grid { grid-template-columns: repeat(3, 1fr); border-radius: 12px; }
+    .pricing-card { padding: 24px 16px; gap: 12px; }
+    .pricing-name { font-size: 16px; }
+    .pricing-price { font-size: 20px; }
+    .pricing-desc { font-size: 11px; }
+    .pricing-meta { font-size: 9px; }
   }
 
   /* ─── CTA ───────────────────────────────── */
@@ -900,7 +907,7 @@ export default function App() {
       {/* ── PRICING ─────────────────────────── */}
       <section className="pricing-section">
         <p className="section-kicker r" style={{color:'var(--dim)'}}>What it costs</p>
-        <h2 className="s-h2 r" style={{color:'var(--ink)'}}>
+        <h2 className="statement-h r">
           Transparent.<br /><em>No surprises.</em>
         </h2>
         <div className="pricing-grid r d1">
