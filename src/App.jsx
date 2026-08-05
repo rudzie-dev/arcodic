@@ -32,7 +32,7 @@ const CSS = `
     --red:    #D63408;
     --serif:  var(--ui); /* deprecated — use --ui directly */
     --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --logo:   'Space Grotesk', var(--ui);
+    --logo:   'Syne', var(--ui);
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
@@ -193,7 +193,7 @@ const CSS = `
 
   .dock-logo {
     font-family: var(--logo);
-    font-weight: 800;
+    font-weight: 600;
     font-size: 16px; color: #fff;
     padding: 0 14px 0 10px;
     line-height: 1;
@@ -252,7 +252,7 @@ const CSS = `
   }
   .hero-wordmark {
     font-family: var(--logo);
-    font-weight: 800;
+    font-weight: 600;
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
     /* opacity:1 immediately so browser registers LCP at paint time */
@@ -381,7 +381,7 @@ const CSS = `
   }
   .sprint-num {
     font-family: var(--logo);
-    font-weight: 800;
+    font-weight: 600;
     font-size: clamp(88px, 13vw, 172px);
     line-height: .88; color: var(--ink); letter-spacing: -.01em;
   }
@@ -606,7 +606,7 @@ const CSS = `
     padding: 64px 64px 0;
     display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px;
   }
-  .f-wordmark { font-family: var(--logo); font-weight: 800; font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+  .f-wordmark { font-family: var(--logo); font-weight: 600; font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
   .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.26); line-height: 1.65; max-width: 200px; }
   .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 18px; }
   .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
@@ -730,11 +730,18 @@ const CSS = `
 `;
 
 // ─── DATA ────────────────────────────────────────────────────────
-const DEMOS = [
+// Real, live client work — this is what does the trust-building.
+const CLIENT_WORK = [
   { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 name search · #3 near me · AI Overview · 5.0★ · 17 reviews" },
   { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · WhatsApp ordering · Local SEO active" },
-  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "UI concept · Hospitality booking flow" },
 ];
+
+// Self-directed demo — kept separate and clearly labelled so it's never
+// mistaken for a paying client. Shows design range without misleading anyone.
+const CONCEPT_WORK = {
+  tag: "Concept — not a client", name: "Noir Atelier", href: "https://lumiere-salon.arcodic.com",
+  result: "Demo build · Hospitality booking flow",
+};
 
 const CONTACTS = [
   { platform: "WhatsApp",  href: "https://wa.me/27676502266" },
@@ -819,7 +826,7 @@ export default function App() {
 
       <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero">
-        <p className="hero-kicker">Digital Studio — Est. 2025</p>
+        <p className="hero-kicker">Web Design Studio — South Africa</p>
         <div className="hero-wordmark">ARCODIC</div>
         <div className="hero-rule" />
         <div className="hero-foot">
@@ -846,17 +853,20 @@ export default function App() {
         </h2>
         <div className="statement-foot">
           <p className="statement-note r d1">
-            ARcodic is a digital studio building high-performance websites
-            for brands that refuse to blend in. Next.js, TypeScript,
-            motion-first — delivered at speed.
+            ARcodic is an independent, one-person studio building
+            high-performance websites for South African businesses that
+            refuse to blend in. No account managers, no agency layers —
+            you work directly with the person building your site, from
+            brief to launch. Next.js, TypeScript, motion-first — delivered
+            at speed.
           </p>
         </div>
       </section>
 
       {/* ── WORK ─────────────────────────────── */}
       <section className="work-section" id="work">
-        <p className="section-kicker r">Selected work</p>
-        {DEMOS.map((d, i) => (
+        <p className="section-kicker r">Client work</p>
+        {CLIENT_WORK.map((d, i) => (
           <a
             key={d.name}
             href={d.href}
@@ -872,6 +882,24 @@ export default function App() {
             <span className="project-arrow">→</span>
           </a>
         ))}
+
+        {/* Concept/demo work — visually and textually separated from real
+            client work above so it never reads as a fabricated case study. */}
+        <p className="section-kicker r" style={{ marginTop: "56px" }}>Concept builds</p>
+        <a
+          href={CONCEPT_WORK.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="project-row r"
+          style={{ opacity: 0.7 }}
+        >
+          <span className="project-tag">{CONCEPT_WORK.tag}</span>
+          <div style={{flex:1}}>
+            <span className="project-name">{CONCEPT_WORK.name}</span>
+            <p style={{fontFamily:'var(--ui)',fontSize:'11px',color:'rgba(255,255,255,.35)',marginTop:'4px',letterSpacing:'.04em'}}>{CONCEPT_WORK.result}</p>
+          </div>
+          <span className="project-arrow">→</span>
+        </a>
       </section>
 
       {/* ── SPRINT ───────────────────────────── */}
@@ -915,7 +943,7 @@ export default function App() {
               meta: "1–2 day turnaround", featured: false,
             },
             {
-              tag: "Most Popular", name: "Starter Site", price: "R3,500", priceEnd: "– R5,500",
+              tag: "Starter", name: "Starter Site", price: "R3,500", priceEnd: "– R5,500",
               desc: "A proper multi-page site with navigation. Everything a local business needs to be taken seriously online.",
               meta: "3–5 day turnaround", featured: true,
             },
@@ -928,7 +956,7 @@ export default function App() {
             <div key={i} className={`pricing-card${p.featured ? " featured" : ""}`}>
               <div className="pricing-tag">
                 {p.tag}
-                {p.featured && <span className="pricing-tag-pill">Popular</span>}
+                {p.featured && <span className="pricing-tag-pill">Recommended</span>}
               </div>
               <div className="pricing-name">{p.name}</div>
               <div className="pricing-price">
@@ -998,8 +1026,8 @@ export default function App() {
         <div>
           <div className="f-wordmark">ARCODIC</div>
           <p className="f-about">
-            Digital studio. Global reach.<br />
-            Built fast, built right.
+            Independent web studio.<br />
+            Built for South African businesses.
           </p>
         </div>
         <div>
@@ -1028,7 +1056,7 @@ export default function App() {
         </div>
       </footer>
       <div className="f-base">
-        <span className="f-copy">© 2025 ARcodic. All rights reserved.</span>
+        <span className="f-copy">© {new Date().getFullYear()} ARcodic. All rights reserved.</span>
         <span className="f-copy">hello@arcodic.com</span>
       </div>
     </>
