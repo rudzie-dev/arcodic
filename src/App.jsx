@@ -1,14 +1,14 @@
 /**
  * ARcodic — Main Site
  * Stack: React 19 + Vite
- * Fonts: Space Grotesk (Google Fonts CDN, wordmark), system UI stack (body)
+ * Fonts: Syne (Google Fonts CDN, wordmark), system UI stack (body)
  * Author: ARcodic Studio
  */
 
 import { useState, useEffect } from "react";
 
 // ─── Wordmark font loaded via Google Fonts <link> in index.html
-//     (see index.html <head> — preconnect + stylesheet, weight 700)
+//     (see index.html <head> — preconnect + stylesheet, Syne 600/700/800)
 
 
 // ─── All CSS lives here — kept in one file intentionally for this
@@ -193,7 +193,7 @@ const CSS = `
 
   .dock-logo {
     font-family: var(--logo);
-    font-weight: 700;
+    font-weight: 800;
     font-size: 16px; color: #fff;
     padding: 0 14px 0 10px;
     line-height: 1;
@@ -252,7 +252,7 @@ const CSS = `
   }
   .hero-wordmark {
     font-family: var(--logo);
-    font-weight: 700;
+    font-weight: 800;
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
     /* opacity:1 immediately so browser registers LCP at paint time */
@@ -381,7 +381,7 @@ const CSS = `
   }
   .sprint-num {
     font-family: var(--logo);
-    font-weight: 700;
+    font-weight: 800;
     font-size: clamp(88px, 13vw, 172px);
     line-height: .88; color: var(--ink); letter-spacing: -.01em;
   }
@@ -606,7 +606,7 @@ const CSS = `
     padding: 64px 64px 0;
     display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px;
   }
-  .f-wordmark { font-family: var(--logo); font-weight: 700; font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+  .f-wordmark { font-family: var(--logo); font-weight: 800; font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
   .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.26); line-height: 1.65; max-width: 200px; }
   .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 18px; }
   .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
