@@ -1,27 +1,19 @@
 /**
  * ARcodic — Main Site
  * Stack: React 19 + Vite
- * Fonts: Godber (embedded), Fraunces, Syne (Google Fonts)
+ * Fonts: Space Grotesk (Google Fonts CDN, wordmark), system UI stack (body)
  * Author: ARcodic Studio
  */
 
 import { useState, useEffect } from "react";
 
-// ─── Godber font embedded as base64 to avoid external font request
-// Godber loaded from /public/fonts/godber.ttf
+// ─── Wordmark font loaded via Google Fonts <link> in index.html
+//     (see index.html <head> — preconnect + stylesheet, weight 700)
 
 
 // ─── All CSS lives here — kept in one file intentionally for this
 //     single-component site. Sections are clearly labelled.
 const CSS = `
-  /* Fonts loaded via <link> in index.html — preloaded in parallel */
-  @font-face {
-    font-family: 'Godber';
-    src: url('/fonts/godber.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-  }
 
   /* ─── RESET ─────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,7 +32,7 @@ const CSS = `
     --red:    #D63408;
     --serif:  var(--ui); /* deprecated — use --ui directly */
     --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --logo:   'Godber', sans-serif;
+    --logo:   'Space Grotesk', var(--ui);
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
@@ -201,6 +193,7 @@ const CSS = `
 
   .dock-logo {
     font-family: var(--logo);
+    font-weight: 700;
     font-size: 16px; color: #fff;
     padding: 0 14px 0 10px;
     line-height: 1;
@@ -240,7 +233,9 @@ const CSS = `
   .hero {
     min-height: 100svh;
     display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 0 64px 80px;
+    /* bottom padding clears the fixed dock (bottom:28px + 52px tall) so the
+       hero CTAs never sit under/behind it on common viewport heights */
+    padding: 0 64px 152px;
     position: relative; overflow: hidden;
   }
   .hero::before {
@@ -257,6 +252,7 @@ const CSS = `
   }
   .hero-wordmark {
     font-family: var(--logo);
+    font-weight: 700;
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
     /* opacity:1 immediately so browser registers LCP at paint time */
@@ -385,6 +381,7 @@ const CSS = `
   }
   .sprint-num {
     font-family: var(--logo);
+    font-weight: 700;
     font-size: clamp(88px, 13vw, 172px);
     line-height: .88; color: var(--ink); letter-spacing: -.01em;
   }
@@ -609,7 +606,7 @@ const CSS = `
     padding: 64px 64px 0;
     display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px;
   }
-  .f-wordmark { font-family: var(--logo); font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+  .f-wordmark { font-family: var(--logo); font-weight: 700; font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
   .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.26); line-height: 1.65; max-width: 200px; }
   .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 18px; }
   .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
@@ -632,7 +629,8 @@ const CSS = `
   .f-base {
     background: var(--ink);
     border-top: 1px solid rgba(255,255,255,.05);
-    padding: 24px 64px;
+    /* extra bottom padding so the fixed dock never sits over the copyright row */
+    padding: 24px 64px 92px;
     display: flex; justify-content: space-between;
   }
   .f-copy { font-family: var(--ui); font-size: 12px; color: rgba(255,255,255,.16); }
@@ -672,7 +670,7 @@ const CSS = `
     .dock-a, .dock-sep { display: none; }
 
     /* hero */
-    .hero { padding: 0 24px 96px; }
+    .hero { padding: 0 24px 140px; }
     .hero-wordmark { font-size: clamp(52px, 16vw, 84px); }
     .hero-foot { flex-direction: column; align-items: flex-start; gap: 24px; }
     .hero-desc { font-size: 15px; max-width: 100%; }
@@ -826,7 +824,9 @@ export default function App() {
         <div className="hero-rule" />
         <div className="hero-foot">
           <p className="hero-desc">
-            Full-stack builds, motion-first UI,<br />
+            {/* explicit {" "} so the space survives JSX's line-break trimming
+                even when .hero-desc br is display:none on mobile */}
+            Full-stack builds, motion-first UI,<br />{" "}
             and <b>24-hour sprint delivery.</b><br />
             Brief to live — fast, sharp, built to perform.
           </p>
