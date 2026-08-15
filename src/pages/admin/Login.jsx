@@ -43,8 +43,9 @@ export default function Login() {
     <div className="sow-ui">
       <style>{UI_CSS}</style>
       <div className="sow-narrow">
+        <p className="sow-kicker">Arcodic — SOW Builder</p>
         <h1 className="sow-h1">{mode === "signin" ? "Sign in" : "Create your account"}</h1>
-        <p className="sow-sub">SOW builder — internal access only.</p>
+        <p className="sow-sub">Internal access only.</p>
         <form onSubmit={submit} className="sow-card">
           <div className="sow-field">
             <label>Email</label>

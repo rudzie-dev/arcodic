@@ -14,13 +14,11 @@ export default function AdminLayout() {
     <div className="sow-ui">
       <style>{UI_CSS}</style>
       <nav className="sow-nav">
-        <Link to="/admin">SOW Builder</Link>
-        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Link to="/admin/profile" style={{ fontSize: 13, fontWeight: 500 }}>My signature</Link>
-          <Link to="/admin/new" className="sow-btn" style={{ padding: "8px 16px", fontSize: 13 }}>
-            + New SOW
-          </Link>
-          <button onClick={logout} className="sow-btn sow-btn-ghost" style={{ padding: "8px 16px", fontSize: 13 }}>
+        <Link to="/admin" className="sow-nav-logo">ARCODIC</Link>
+        <div className="sow-nav-links">
+          <Link to="/admin/profile" className="sow-nav-link">My signature</Link>
+          <Link to="/admin/new" className="sow-nav-cta" style={{ marginLeft: 8 }}>+ New SOW</Link>
+          <button onClick={logout} className="sow-nav-ghost" style={{ marginLeft: 8 }}>
             Log out
           </button>
         </div>

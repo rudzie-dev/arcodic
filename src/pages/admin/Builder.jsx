@@ -98,6 +98,7 @@ export default function Builder() {
   if (createdLink) {
     return (
       <div className="sow-shell">
+        <p className="sow-kicker">Builder</p>
         <h1 className="sow-h1">Link generated</h1>
         <p className="sow-sub">Your signature is already on the document. Send this to your client to review and sign.</p>
         <div className="sow-card">
@@ -120,6 +121,7 @@ export default function Builder() {
 
   return (
     <div className="sow-shell">
+      <p className="sow-kicker">Builder</p>
       <h1 className="sow-h1">New SOW</h1>
       <p className="sow-sub">
         Fill this out after the call. Your signature ({profile?.signature_typed || "not set — "}
@@ -128,7 +130,7 @@ export default function Builder() {
 
       <form onSubmit={submit}>
         <div className="sow-card">
-          <h3 style={{ marginBottom: 14, fontSize: 13, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--dim)" }}>
+          <h3 className="sow-section-label">
             Client
           </h3>
           <div className="sow-row">
@@ -148,7 +150,7 @@ export default function Builder() {
         </div>
 
         <div className="sow-card">
-          <h3 style={{ marginBottom: 14, fontSize: 13, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--dim)" }}>
+          <h3 className="sow-section-label">
             Project
           </h3>
           <div className="sow-field">
@@ -191,7 +193,7 @@ export default function Builder() {
         </div>
 
         <div className="sow-card">
-          <h3 style={{ marginBottom: 14, fontSize: 13, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--dim)" }}>
+          <h3 className="sow-section-label">
             Terms
           </h3>
           <div className="sow-field">

@@ -51,6 +51,7 @@ export default function Profile() {
 
   return (
     <div className="sow-shell">
+      <p className="sow-kicker">Settings</p>
       <h1 className="sow-h1">Your signature</h1>
       <p className="sow-sub">
         This gets pre-baked into every new SOW automatically — no separate signing step for you.

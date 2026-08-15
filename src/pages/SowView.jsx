@@ -81,7 +81,11 @@ export default function SowView() {
   return (
     <div className="sow-ui">
       <style>{UI_CSS}</style>
+      <nav className="sow-nav">
+        <span className="sow-nav-logo">ARCODIC</span>
+      </nav>
       <div className="sow-shell">
+        <p className="sow-kicker">Statement of Work</p>
         <h1 className="sow-h1">{sow.project_title}</h1>
         <p className="sow-sub">
           Prepared for {sow.client_name}

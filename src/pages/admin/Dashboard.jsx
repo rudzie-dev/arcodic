@@ -43,6 +43,7 @@ export default function Dashboard() {
 
   return (
     <div className="sow-shell">
+      <p className="sow-kicker">Dashboard</p>
       <h1 className="sow-h1">Statements of Work</h1>
       <p className="sow-sub">
         {sows.length === 0 ? "No SOWs yet." : `${sows.length} SOW${sows.length === 1 ? "" : "s"}`}
