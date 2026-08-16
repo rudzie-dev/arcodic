@@ -1,27 +1,16 @@
 /**
  * ARcodic — Main Site
  * Stack: React 19 + Vite
- * Fonts: Godber (embedded), Fraunces, Syne (Google Fonts)
+ * Fonts: Inter, Playfair Display (Google Fonts)
  * Author: ARcodic Studio
  */
 
 import { useState, useEffect } from "react";
 
-// ─── Godber font embedded as base64 to avoid external font request
-// Godber loaded from /public/fonts/godber.ttf
-
-
 // ─── All CSS lives here — kept in one file intentionally for this
 //     single-component site. Sections are clearly labelled.
 const CSS = `
   /* Fonts loaded via <link> in index.html — preloaded in parallel */
-  @font-face {
-    font-family: 'Godber';
-    src: url('/fonts/godber.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-  }
 
   /* ─── RESET ─────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,8 +28,8 @@ const CSS = `
     --line:   rgba(18,16,9,.07);
     --red:    #D63408;
     --serif:  var(--ui); /* deprecated — use --ui directly */
-    --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --logo:   'Godber', sans-serif;
+    --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --logo:   'Playfair Display', serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
@@ -200,7 +189,7 @@ const CSS = `
   .dock.open .dock-row { opacity: 1; pointer-events: auto; }
 
   .dock-logo {
-    font-family: var(--logo);
+    font-family: var(--logo); font-weight: 600;
     font-size: 16px; color: #fff;
     padding: 0 14px 0 10px;
     line-height: 1;
@@ -256,7 +245,7 @@ const CSS = `
     animation: wordmarkIn .6s var(--ease-out) forwards;
   }
   .hero-wordmark {
-    font-family: var(--logo);
+    font-family: var(--logo); font-weight: 700;
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
     /* opacity:1 immediately so browser registers LCP at paint time */
@@ -384,7 +373,7 @@ const CSS = `
     display: flex; flex-direction: column; justify-content: flex-end; gap: 16px;
   }
   .sprint-num {
-    font-family: var(--logo);
+    font-family: var(--logo); font-weight: 700;
     font-size: clamp(88px, 13vw, 172px);
     line-height: .88; color: var(--ink); letter-spacing: -.01em;
   }
@@ -609,7 +598,7 @@ const CSS = `
     padding: 64px 64px 0;
     display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px;
   }
-  .f-wordmark { font-family: var(--logo); font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+  .f-wordmark { font-family: var(--logo); font-weight: 600; font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
   .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.26); line-height: 1.65; max-width: 200px; }
   .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 18px; }
   .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
