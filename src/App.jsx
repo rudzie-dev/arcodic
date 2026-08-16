@@ -1,7 +1,7 @@
 /**
  * ARcodic — Main Site
  * Stack: React 19 + Vite
- * Fonts: Inter, Playfair Display (Google Fonts)
+ * Fonts: Inter (Google Fonts)
  * Author: ARcodic Studio
  */
 
@@ -29,7 +29,7 @@ const CSS = `
     --red:    #D63408;
     --serif:  var(--ui); /* deprecated — use --ui directly */
     --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --logo:   'Playfair Display', serif;
+    --logo:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
@@ -245,7 +245,7 @@ const CSS = `
     animation: wordmarkIn .6s var(--ease-out) forwards;
   }
   .hero-wordmark {
-    font-family: var(--logo); font-weight: 700;
+    font-family: var(--logo); font-weight: 800; letter-spacing: -.03em;
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
     /* opacity:1 immediately so browser registers LCP at paint time */
@@ -373,9 +373,9 @@ const CSS = `
     display: flex; flex-direction: column; justify-content: flex-end; gap: 16px;
   }
   .sprint-num {
-    font-family: var(--logo); font-weight: 700;
+    font-family: var(--logo); font-weight: 800;
     font-size: clamp(88px, 13vw, 172px);
-    line-height: .88; color: var(--ink); letter-spacing: -.01em;
+    line-height: .88; color: var(--ink); letter-spacing: -.03em;
   }
   .sprint-num span { color: var(--red); }
   .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim); }
