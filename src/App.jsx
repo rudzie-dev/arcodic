@@ -245,12 +245,24 @@ const CSS = `
     animation: wordmarkIn .6s var(--ease-out) forwards;
   }
   .hero-wordmark {
-    font-family: var(--logo); font-weight: 800; letter-spacing: -.03em;
+    font-family: var(--logo); letter-spacing: -.03em;
     font-size: clamp(68px, 13.5vw, 196px);
     line-height: .9; color: #fff;
-    /* opacity:1 immediately so browser registers LCP at paint time */
+    /* opacity:1 immediately so browser registers LCP at paint time —
+       the block itself doesn't fade/slide, only its letters do */
     opacity: 1;
-    animation: wordmarkIn .9s var(--ease-out) forwards;
+  }
+  /* each letter ramps in on its own: weight builds from hairline to
+     black and it settles up into place — Inter has no inherent
+     "shape" personality at this scale, so the assembly motion carries it */
+  .hero-wordmark span {
+    display: inline-block;
+    opacity: 0; transform: translateY(.22em);
+    font-weight: 100;
+    animation: letterIn .68s var(--ease-out) forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-wordmark span { animation: none; opacity: 1; transform: none; font-weight: 800; }
   }
   .hero-rule {
     width: 100%; height: 1px;
@@ -645,6 +657,7 @@ const CSS = `
   @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
   @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  @keyframes letterIn    { to { opacity: 1; transform: translateY(0); font-weight: 800; } }
   @keyframes spin        { to { transform:rotate(360deg); }                                                           }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
   @keyframes glowPulse   { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 28px rgba(214,52,8,.55),0 0 8px rgba(214,52,8,.3)} }
@@ -811,7 +824,11 @@ export default function App() {
       <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero">
         <p className="hero-kicker">Digital Studio — Est. 2025</p>
-        <div className="hero-wordmark">ARCODIC</div>
+        <div className="hero-wordmark" aria-label="ARCODIC">
+          {"ARCODIC".split("").map((ch, i) => (
+            <span key={i} style={{ animationDelay: `${.42 + i * .045}s` }} aria-hidden="true">{ch}</span>
+          ))}
+        </div>
         <div className="hero-rule" />
         <div className="hero-foot">
           <p className="hero-desc">
