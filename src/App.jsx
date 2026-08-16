@@ -237,33 +237,67 @@ const CSS = `
     background: radial-gradient(ellipse 60% 48% at 58% 28%, rgba(214,52,8,.055) 0%, transparent 65%);
   }
 
-  .hero-kicker {
-    font-family: var(--ui); font-size: 11px; font-weight: 600;
-    letter-spacing: .2em; text-transform: uppercase;
-    color: rgba(255,255,255,.55); margin-bottom: 28px;
+  /* ─── HERO / EYEBROW ROW ────────────────────
+     Brand mark (mini) + a status badge, sitting above the headline.
+     The nav dock already owns the wordmark persistently, so the hero
+     doesn't need to repeat it at giant scale — this is a signature,
+     not the centerpiece. */
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    margin-bottom: 30px;
     opacity: 1;
     animation: wordmarkIn .6s var(--ease-out) forwards;
   }
-  .hero-wordmark {
-    font-family: var(--logo); letter-spacing: -.03em;
-    font-size: clamp(68px, 13.5vw, 196px);
-    line-height: .9; color: #fff;
-    /* opacity:1 immediately so browser registers LCP at paint time —
-       the block itself doesn't fade/slide, only its letters do */
-    opacity: 1;
+  .brand-mark {
+    font-family: var(--logo); letter-spacing: -.01em;
+    font-size: 15px; color: rgba(255,255,255,.72);
   }
   /* each letter ramps in on its own: weight builds from hairline to
-     black and it settles up into place — Inter has no inherent
-     "shape" personality at this scale, so the assembly motion carries it */
-  .hero-wordmark span {
+     black and settles up into place — Inter has no inherent "shape"
+     personality on its own, so the assembly motion carries it */
+  .brand-mark span {
     display: inline-block;
-    opacity: 0; transform: translateY(.22em);
+    opacity: 0; transform: translateY(.3em);
     font-weight: 100;
-    animation: letterIn .68s var(--ease-out) forwards;
+    animation: letterIn .5s var(--ease-out) forwards;
+  }
+  .hero-badge {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--ui); font-size: 12px; font-weight: 500;
+    color: rgba(255,255,255,.42);
+    padding-left: 18px; border-left: 1px solid rgba(255,255,255,.12);
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red); flex-shrink: 0;
+    animation: dotPulse 2.4s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-wordmark span { animation: none; opacity: 1; transform: none; font-weight: 800; }
+    .brand-mark span { animation: none; opacity: 1; transform: none; font-weight: 700; }
+    .hero-badge-dot  { animation: none; }
   }
+
+  /* ─── HERO / HEADLINE ────────────────────────
+     Mask-reveal: each word slides up out of an overflow-hidden
+     wrapper, staggered — the headline itself is now the hero's
+     visual anchor instead of an oversized logotype. */
+  .hero-headline {
+    font-family: var(--ui); font-weight: 600;
+    font-size: clamp(42px, 7vw, 104px);
+    line-height: 1.02; letter-spacing: -.03em; color: #fff;
+  }
+  .hl-line { display: block; overflow: hidden; padding-bottom: .06em; }
+  .hl-accent { font-style: italic; font-weight: 800; color: var(--red); }
+  .reveal-mask  { display: inline-block; overflow: hidden; vertical-align: bottom; }
+  .reveal-inner {
+    display: inline-block;
+    transform: translateY(115%);
+    animation: maskUp .8s var(--ease-out) forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-inner { animation: none; transform: none; }
+  }
+
   .hero-rule {
     width: 100%; height: 1px;
     background: rgba(255,255,255,.07);
@@ -657,7 +691,9 @@ const CSS = `
   @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
   @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-  @keyframes letterIn    { to { opacity: 1; transform: translateY(0); font-weight: 800; } }
+  @keyframes letterIn    { to { opacity: 1; transform: translateY(0); font-weight: 700; } }
+  @keyframes maskUp      { to { transform: translateY(0); } }
+  @keyframes dotPulse    { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
   @keyframes spin        { to { transform:rotate(360deg); }                                                           }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
   @keyframes glowPulse   { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 28px rgba(214,52,8,.55),0 0 8px rgba(214,52,8,.3)} }
@@ -675,10 +711,10 @@ const CSS = `
 
     /* hero */
     .hero { padding: 0 24px 96px; }
-    .hero-wordmark { font-size: clamp(52px, 16vw, 84px); }
+    .hero-eyebrow { flex-wrap: wrap; gap: 10px 18px; }
+    .hero-headline { font-size: clamp(34px, 10vw, 52px); }
     .hero-foot { flex-direction: column; align-items: flex-start; gap: 24px; }
     .hero-desc { font-size: 15px; max-width: 100%; }
-    .hero-desc br { display: none; }
     .hero-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .hero-btns .btn { width: 100%; text-align: center; margin-left: 0; padding: 16px; font-size: 15px; }
 
@@ -745,6 +781,35 @@ const CONTACTS = [
   { platform: "Instagram", href: "https://instagram.com/arcodic.studio" },
   { platform: "Email",     href: "mailto:hello@arcodic.com" },
 ];
+
+// ─── KINETIC TEXT HELPERS ────────────────────────────────────────
+// Small brand mark: each letter ramps weight in on its own, staggered.
+const BrandMark = ({ text = "ARCODIC", baseDelay = 0, step = .04 }) => (
+  <span className="brand-mark" aria-label={text}>
+    {text.split("").map((ch, i) => (
+      <span key={i} style={{ animationDelay: `${baseDelay + i * step}s` }} aria-hidden="true">{ch}</span>
+    ))}
+  </span>
+);
+
+// Headline line: each word slides up out of an overflow-hidden mask,
+// staggered across the whole headline (wordIndexOffset keeps later
+// lines continuing the stagger rather than restarting it).
+const MaskLine = ({ words, wordIndexOffset = 0, baseDelay = .5, step = .07, className = "" }) => (
+  <span className={`hl-line ${className}`}>
+    {words.map((w, i) => (
+      <span className="reveal-mask" key={i}>
+        <span
+          className={`reveal-inner${w.accent ? " hl-accent" : ""}`}
+          style={{ animationDelay: `${baseDelay + (wordIndexOffset + i) * step}s` }}
+        >
+          {w.text}
+        </span>
+        {i < words.length - 1 && " "}
+      </span>
+    ))}
+  </span>
+);
 
 // ─── ARROW SVG ───────────────────────────────────────────────────
 // Minimal ↗ path — same shape, two opacities for crossfade effect
@@ -823,17 +888,22 @@ export default function App() {
 
       <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero">
-        <p className="hero-kicker">Digital Studio — Est. 2025</p>
-        <div className="hero-wordmark" aria-label="ARCODIC">
-          {"ARCODIC".split("").map((ch, i) => (
-            <span key={i} style={{ animationDelay: `${.42 + i * .045}s` }} aria-hidden="true">{ch}</span>
-          ))}
+        <div className="hero-eyebrow">
+          <BrandMark baseDelay={0} />
+          <p className="hero-badge">
+            <span className="hero-badge-dot" />
+            Available for new projects
+          </p>
         </div>
+        <h1 className="hero-headline">
+          <MaskLine words={[{ text: "We design and" }]} wordIndexOffset={0} baseDelay={.32} />
+          <MaskLine words={[{ text: "build digital work" }]} wordIndexOffset={1} baseDelay={.32} />
+          <MaskLine words={[{ text: "that", }, { text: "performs.", accent: true }]} wordIndexOffset={2} baseDelay={.32} />
+        </h1>
         <div className="hero-rule" />
         <div className="hero-foot">
           <p className="hero-desc">
-            Full-stack builds, motion-first UI,<br />
-            and <b>24-hour sprint delivery.</b><br />
+            Full-stack builds, motion-first UI, and <b>24-hour sprint delivery.</b>{" "}
             Brief to live — fast, sharp, built to perform.
           </p>
           <div className="hero-btns">
