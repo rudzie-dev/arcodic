@@ -427,20 +427,29 @@ const CSS = `
   .sprint-h em { font-style: normal; font-weight: 400; color: var(--dim); }
   .sprint-body { font-family: var(--ui); font-size: 16px; line-height: 1.72; color: var(--dim); max-width: 400px; }
 
-  /* ─── CONTACT (now closes out the CTA section, not standalone) ── */
+  /*
+    ─── CONTACT (closes out the CTA section, not standalone) ──
+    Was a 3-column grid with equal-width cells — forced "Email"
+    into the same width as "Instagram" and left it looking hollow.
+    Pills that size to their own content instead: every card reads
+    at the same visual density regardless of label length.
+  */
   .contact-grid {
-    display: grid; grid-template-columns: repeat(3,1fr);
-    gap: 1px; background: rgba(255,255,255,.06);
-    border-radius: 20px; overflow: hidden; margin-top: 48px;
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 14px; margin-top: 48px;
   }
 
   .contact-card {
-    background: var(--ink); padding: 36px 40px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 999px;
+    padding: 18px 28px 18px 22px;
     text-decoration: none; color: inherit;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; gap: 24px;
     position: relative; overflow: hidden;
-    transition: transform .2s var(--ease-spring);
+    transition: transform .2s var(--ease-spring), border-color .3s ease;
   }
+  .contact-card:hover { border-color: transparent; }
 
   /*
     Whole-card color swipe on hover.
@@ -751,13 +760,13 @@ const CSS = `
     .sprint-right { padding: 36px 24px 56px; }
     .sprint-right .btn { width: 100%; text-align: center; margin-left: 0; }
 
-    /* contact: single column, horizontal card layout */
-    .contact-grid { grid-template-columns: 1fr; border-radius: 16px; }
+    /* contact: full-width stacked rows instead of inline pills */
+    .contact-grid { flex-direction: column; gap: 10px; }
     .contact-card {
-      min-height: 0; padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 20px 22px;
+      justify-content: space-between;
     }
-    .contact-card:last-child { border-bottom: none; }
     .contact-card:hover { transform: none; }
     .contact-card:active { background: #1c1916; }
 
