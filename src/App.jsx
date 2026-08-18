@@ -5,7 +5,7 @@
  * Author: ARCODIC Studio
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // ─── Cal Sans (logo/display) + Inter (UI/body) loaded from /public/fonts
 //     — both self-hosted to avoid an external font request
@@ -78,10 +78,6 @@ const CSS = `
       background: rgba(241,237,230,.75);
       border-color: rgba(18,16,9,.12);
       box-shadow: 0 4px 24px rgba(18,16,9,.1), inset 0 1px 0 rgba(255,255,255,.7);
-    }
-    .dock-spin {
-      border-color: rgba(18,16,9,.15);
-      border-top-color: #121009;
     }
     .dock-logo { color: #121009; }
     .dock-sep  { background: rgba(18,16,9,.12); }
@@ -158,20 +154,28 @@ const CSS = `
 
   /* ─── DOCK ──────────────────────────────── */
   /*
-    Starts as a 52×52 circle with a spinner.
-    Width transitions to open state — border-radius
-    stays 999px throughout so it morphs as a pill.
-    Content fades in after the pill has formed.
+    Hidden while the hero is on screen — the hero already has its own
+    CTAs, and popping this up on load just sits on top of the wordmark.
+    Fades/slides in once the hero has been scrolled past (state driven
+    from JS scroll position), and hides again if scrolled back to top.
+    Always a fully-formed pill — no circle/spinner load-in morph, since
+    that read as a "connecting" cue and doesn't make sense fired mid-scroll.
   */
   .dock-shell {
     position: fixed;
     bottom: 28px; left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(10px);
     z-index: 400;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+  }
+  .dock-shell.visible {
+    opacity: 1; pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
   }
 
   .dock {
-    height: 52px; width: 52px;
+    height: 52px; width: 482px;
     border-radius: 999px;
     background: rgba(18,16,9,.68);
     backdrop-filter: blur(32px) saturate(1.9);
@@ -180,35 +184,14 @@ const CSS = `
     box-shadow: 0 4px 32px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.07);
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
-    transition: width .9s cubic-bezier(.76,0,.18,1);
-    will-change: width;
   }
-
-  /* +14px over the row's raw content width — .dock-row's own 7px+7px
-     padding was overflowing this box and getting eaten by overflow:
-     hidden below, so the logo and the CTA pill both sat flush against
-     the dock's rounded ends with zero clearance. */
-  .dock.open   { width: 482px; }
   .dock.breathe { animation: dockBreathe .6s var(--ease-spring) forwards; }
-
-  .dock-spin {
-    width: 18px; height: 18px;
-    border: 1.5px solid rgba(255,255,255,.14);
-    border-top-color: rgba(255,255,255,.78);
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-    flex-shrink: 0;
-    transition: opacity .15s ease, width .15s ease;
-  }
-  .dock.open .dock-spin { opacity: 0; width: 0; }
 
   .dock-row {
     display: flex; align-items: center;
     padding: 0 7px;
-    opacity: 0; white-space: nowrap; pointer-events: none;
-    transition: opacity .3s ease .68s;
+    white-space: nowrap;
   }
-  .dock.open .dock-row { opacity: 1; pointer-events: auto; }
 
   .dock-logo {
     font-family: var(--logo);
@@ -713,7 +696,6 @@ const CSS = `
   @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
   @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-  @keyframes spin        { to { transform:rotate(360deg); }                                                           }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
 
   /* ─── MOBILE ────────────────────────────── */
@@ -724,7 +706,7 @@ const CSS = `
     * { scrollbar-width: none; }
 
     /* dock: hide nav links, pill shrinks to logo + cta only */
-    .dock.open { width: 224px; } /* same +14px padding fix as desktop */
+    .dock { width: 224px; } /* same +14px padding fix as desktop */
     .dock-a, .dock-sep { display: none; }
 
     /* hero */
@@ -850,27 +832,33 @@ const PlatformIcon = ({ platform }) => {
 
 // ─── COMPONENT ───────────────────────────────────────────────────
 export default function App() {
-  const [open,     setOpen]     = useState(false);
-  const [breathe,  setBreathe]  = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [dockVisible, setDockVisible] = useState(false);
+  const [breathe,     setBreathe]     = useState(false);
+  const [progress,    setProgress]    = useState(0);
+  const hasBreathed = useRef(false);
 
-  // Dock: circle → pill → brief breathe pulse
+  // Dock: hidden over the hero, fades in once scrolled past it (and
+  // back out if scrolled back to the top) — plus a one-time "breathe"
+  // pulse the first time it appears. Also drives the scroll progress bar.
   useEffect(() => {
-    const t1 = setTimeout(() => setOpen(true), 0);
-    const t2 = setTimeout(() => {
-      setBreathe(true);
-      setTimeout(() => setBreathe(false), 700);
-    }, 800);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
-
-  // Scroll progress bar
-  useEffect(() => {
+    const hero = document.querySelector(".hero");
     const onScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       setProgress((scrollTop / (scrollHeight - clientHeight)) * 100);
+
+      const threshold = hero ? hero.offsetHeight * 0.7 : window.innerHeight * 0.7;
+      const past = scrollTop > threshold;
+      setDockVisible(past);
+      if (past && !hasBreathed.current) {
+        hasBreathed.current = true;
+        setTimeout(() => {
+          setBreathe(true);
+          setTimeout(() => setBreathe(false), 700);
+        }, 250);
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -884,9 +872,6 @@ export default function App() {
     return () => io.disconnect();
   }, []);
 
-  const dockCls = ["dock", open && "open", breathe && "breathe"]
-    .filter(Boolean).join(" ");
-
   return (
     <>
       <style>{CSS}</style>
@@ -895,9 +880,8 @@ export default function App() {
       <div className="progress" style={{ width: `${progress}%` }} />
 
       {/* ── DOCK ─────────────────────────────── */}
-      <div className="dock-shell">
-        <nav className={dockCls}>
-          {!open && <div className="dock-spin" />}
+      <div className={`dock-shell${dockVisible ? " visible" : ""}`}>
+        <nav className={`dock${breathe ? " breathe" : ""}`}>
           <div className="dock-row">
             <span className="dock-logo">ARCODIC</span>
             <div className="dock-sep" />
