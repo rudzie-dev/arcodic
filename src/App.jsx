@@ -19,14 +19,14 @@ const CSS = `
     src: url('/fonts/cal-sans.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
-    font-display: block;
+    font-display: swap; /* show fallback immediately on slow nets, swap in when ready */
   }
   @font-face {
     font-family: 'Inter';
     src: url('/fonts/inter-var.woff2') format('woff2-variations');
     font-weight: 100 900;
     font-style: normal;
-    font-display: block;
+    font-display: swap;
   }
 
   /* ─── RESET ─────────────────────────────── */
@@ -45,7 +45,7 @@ const CSS = `
     --line:   rgba(18,16,9,.07);
     --red:    #D63408;
     --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --logo:   'Cal Sans', sans-serif;
+    --logo:   'Cal Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
