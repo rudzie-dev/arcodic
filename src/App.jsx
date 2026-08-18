@@ -1,14 +1,14 @@
 /**
  * ARcodic — Main Site
  * Stack: React 19 + Vite
- * Fonts: Cal Sans (self-hosted), Syne (Google Fonts)
+ * Fonts: Cal Sans + Inter (both self-hosted, OFL-licensed)
  * Author: ARcodic Studio
  */
 
 import { useState, useEffect } from "react";
 
-// ─── Cal Sans loaded from /public/fonts/cal-sans.woff2 (OFL-licensed)
-
+// ─── Cal Sans (logo/display) + Inter (UI/body) loaded from /public/fonts
+//     — both self-hosted to avoid an external font request
 
 // ─── All CSS lives here — kept in one file intentionally for this
 //     single-component site. Sections are clearly labelled.
@@ -18,6 +18,13 @@ const CSS = `
     font-family: 'Cal Sans';
     src: url('/fonts/cal-sans.woff2') format('woff2');
     font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('/fonts/inter-var.woff2') format('woff2-variations');
+    font-weight: 100 900;
     font-style: normal;
     font-display: block;
   }
@@ -37,8 +44,7 @@ const CSS = `
     --dim:    #878075;
     --line:   rgba(18,16,9,.07);
     --red:    #D63408;
-    --serif:  var(--ui); /* deprecated — use --ui directly */
-    --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --logo:   'Cal Sans', sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
