@@ -39,10 +39,10 @@ const CSS = `
     Accent red stays consistent across both modes.
   */
   :root {
-    --ink:    #121009;
+    --ink:    #101010;
     --paper:  #F1EDE6;
     --dim:    #878075;
-    --line:   rgba(18,16,9,.07);
+    --line:   rgba(16,16,16,.07);
     --red:    #D63408;
     --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --logo:   'Cal Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -56,7 +56,7 @@ const CSS = `
 
   /*
     ─── LIGHT MODE ──────────────────────────────
-    Strategy: sections that are dark (#121009) stay
+    Strategy: sections that are dark (#101010) stay
     dark — they're intentional design moments.
     Only the paper sections and dock adapt.
     All hardcoded rgba values are explicitly
@@ -66,43 +66,43 @@ const CSS = `
 
     /* scrollbar — dark thumb on light track */
     ::-webkit-scrollbar-thumb {
-      background: rgba(18,16,9,.18);
+      background: rgba(16,16,16,.18);
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(18,16,9,.38);
+      background: rgba(16,16,16,.38);
     }
-    * { scrollbar-color: rgba(18,16,9,.18) transparent; }
+    * { scrollbar-color: rgba(16,16,16,.18) transparent; }
 
     /* ── dock: light glass pill ── */
     .dock {
       background: rgba(241,237,230,.75);
-      border-color: rgba(18,16,9,.12);
-      box-shadow: 0 4px 24px rgba(18,16,9,.1), inset 0 1px 0 rgba(255,255,255,.7);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 4px 24px rgba(16,16,16,.1), inset 0 1px 0 rgba(255,255,255,.7);
     }
-    .dock-logo { color: #121009; }
-    .dock-sep  { background: rgba(18,16,9,.12); }
-    .dock-a    { color: rgba(18,16,9,.5); }
-    .dock-a:hover { color: #121009; }
-    .dock-a::after { background: rgba(18,16,9,.6); }
-    .dock-cta  { background: #121009; color: #F1EDE6; }
+    .dock-logo { color: #101010; }
+    .dock-sep  { background: rgba(16,16,16,.12); }
+    .dock-a    { color: rgba(16,16,16,.5); }
+    .dock-a:hover { color: #101010; }
+    .dock-a::after { background: rgba(16,16,16,.6); }
+    .dock-cta  { background: #101010; color: #F1EDE6; }
     .dock-cta:hover { background: var(--red); color: #fff; }
 
     /* ── statement (paper section) ── */
     /* bg is already #F1EDE6 — just ensure text contrast */
-    .statement-h     { color: #121009; }
+    .statement-h     { color: #101010; }
     .statement-h em  { color: #6B6460; }
     .statement-note  { color: #6B6460; }
 
     /* ── sprint (paper section) ── */
-    .sprint-num      { color: #121009; }
+    .sprint-num      { color: #101010; }
     .sprint-label    { color: #6B6460; }
     .sprint-steps    { color: #6B6460; }
-    .sprint-steps-sep { color: rgba(18,16,9,.25); }
-    .sprint-h        { color: #121009; }
+    .sprint-steps-sep { color: rgba(16,16,16,.25); }
+    .sprint-h        { color: #101010; }
     .sprint-body     { color: #6B6460; }
     /* sprint btn on light bg */
     .sprint-right .btn-dark {
-      background: #121009;
+      background: #101010;
       color: #F1EDE6;
     }
     .sprint-right .btn-dark:hover {
@@ -177,7 +177,7 @@ const CSS = `
   .dock {
     height: 52px; width: 482px;
     border-radius: 999px;
-    background: rgba(18,16,9,.68);
+    background: rgba(16,16,16,.68);
     backdrop-filter: blur(32px) saturate(1.9);
     -webkit-backdrop-filter: blur(32px) saturate(1.9);
     border: 1px solid rgba(255,255,255,.11);
@@ -403,7 +403,7 @@ const CSS = `
     letter-spacing: .12em; text-transform: uppercase;
     color: var(--dim);
   }
-  .sprint-steps-sep { color: rgba(18,16,9,.25); font-size: 10px; }
+  .sprint-steps-sep { color: rgba(16,16,16,.25); font-size: 10px; }
   .sprint-steps-live { color: var(--red); }
   .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
   .sprint-h {
@@ -514,7 +514,7 @@ const CSS = `
     background: var(--ink);
     border-color: var(--ink);
   }
-  .pricing-card.featured:hover { background: #1d1a16; }
+  .pricing-card.featured:hover { background: #1c1c1c; }
   .pricing-tag {
     font-family: var(--ui);
     font-size: 10px;
@@ -754,7 +754,7 @@ const CSS = `
       justify-content: space-between;
     }
     .contact-card:hover { transform: none; }
-    .contact-card:active { background: #1c1916; }
+    .contact-card:active { background: #1c1c1c; }
 
     /* cta */
     .cta-section { padding: 80px 24px 100px; }
@@ -846,7 +846,7 @@ export default function App() {
     const hero = document.querySelector(".hero");
     const sections = [...document.querySelectorAll("[data-theme]")];
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    const THEME_COLOR = { dark: "#121009", light: "#F1EDE6" };
+    const THEME_COLOR = { dark: "#101010", light: "#F1EDE6" };
     let currentTheme = null;
 
     const onScroll = () => {
