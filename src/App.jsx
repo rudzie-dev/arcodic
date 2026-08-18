@@ -307,9 +307,6 @@ const CSS = `
   .btn-dark        { background: var(--ink); color: var(--paper); }
   .btn-dark:hover  { background: var(--red); color: #fff; }
 
-  /* glow pulses twice after load — draws eye to CTA once */
-  .btn-glow { animation: glowPulse 2.8s var(--ease-out) 2.2s 2 forwards; }
-
   /* ─── STATEMENT ─────────────────────────── */
   .statement {
     background: var(--paper); color: var(--ink);
@@ -404,9 +401,7 @@ const CSS = `
   .sprint-h em { font-style: normal; font-weight: 400; color: var(--dim); }
   .sprint-body { font-family: var(--ui); font-size: 16px; line-height: 1.72; color: var(--dim); max-width: 400px; }
 
-  /* ─── CONTACT ───────────────────────────── */
-  .contact-section { background: var(--ink); padding: 96px 64px; }
-
+  /* ─── CONTACT (now closes out the CTA section, not standalone) ── */
   .contact-grid {
     display: grid; grid-template-columns: repeat(3,1fr);
     gap: 1px; background: rgba(255,255,255,.06);
@@ -605,7 +600,10 @@ const CSS = `
     margin-left: auto; margin-right: auto;
     position: relative;
   }
-  .cta-row { display: flex; justify-content: center; gap: 12px; position: relative; }
+  /* contact grid, reused here to close the CTA section — tighter
+     top margin than its original standalone use since cta-sub
+     already carries margin-bottom */
+  .cta-section .contact-grid { margin-top: 8px; max-width: 720px; margin-left: auto; margin-right: auto; }
 
   /* ─── FOOTER ────────────────────────────── */
   footer {
@@ -663,7 +661,6 @@ const CSS = `
   @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
   @keyframes spin        { to { transform:rotate(360deg); }                                                           }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
-  @keyframes glowPulse   { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 28px rgba(214,52,8,.55),0 0 8px rgba(214,52,8,.3)} }
 
   /* ─── MOBILE ────────────────────────────── */
   @media (max-width: 768px) {
@@ -712,7 +709,6 @@ const CSS = `
     .sprint-right .btn { width: 100%; text-align: center; margin-left: 0; }
 
     /* contact: single column, horizontal card layout */
-    .contact-section { padding: 56px 24px; }
     .contact-grid { grid-template-columns: 1fr; border-radius: 16px; }
     .contact-card {
       min-height: 0; padding: 24px 20px;
@@ -726,8 +722,6 @@ const CSS = `
     .cta-section { padding: 80px 24px 100px; }
     .cta-h { font-size: clamp(42px, 12vw, 68px); }
     .cta-sub { font-size: 14px; margin-bottom: 36px; max-width: 100%; }
-    .cta-row { flex-direction: column; align-items: stretch; gap: 10px; }
-    .cta-row .btn { text-align: center; margin-left: 0; font-size: 15px; padding: 17px; }
 
     /* footer: 2 columns instead of 4 */
     footer { grid-template-columns: 1fr 1fr; padding: 48px 24px 0; gap: 28px 16px; }
@@ -818,6 +812,7 @@ export default function App() {
             <div className="dock-sep" />
             <a href="#work"    className="dock-a">Work</a>
             <a href="#sprint"  className="dock-a">24H</a>
+            <a href="#pricing" className="dock-a">Pricing</a>
             <a href="#contact" className="dock-a">Contact</a>
             <a href="#contact" className="dock-cta">Let&#39;s build</a>
           </div>
@@ -843,7 +838,7 @@ export default function App() {
       </section>
 
       {/* ── STATEMENT ────────────────────────── */}
-      <section className="statement">
+      <section className="statement" id="statement">
         <h2 className="statement-h r">
           We close the gap between<br />
           how good your business is<br />
@@ -908,7 +903,7 @@ export default function App() {
 
 
       {/* ── PRICING ─────────────────────────── */}
-      <section className="pricing-section">
+      <section className="pricing-section" id="pricing">
         <p className="section-kicker r" style={{color:'var(--dim)'}}>What it costs</p>
         <h2 className="statement-h r">
           Transparent.<br /><em>No surprises.</em>
@@ -951,17 +946,27 @@ export default function App() {
         </p>
       </section>
 
-      {/* ── CONTACT ──────────────────────────── */}
-      <section className="contact-section" id="contact">
-        <p className="section-kicker r">Get in touch</p>
-        <div className="contact-grid">
+      {/* ── CTA / CONTACT ────────────────────── */}
+      {/* Merged: was two back-to-back dark sections both asking for
+          contact — now one close, ending in the actual contact grid
+          instead of a redundant email button. */}
+      <section className="cta-section" id="contact">
+        <h2 className="cta-h r">
+          Ready to build<br />
+          <em>something real?</em>
+        </h2>
+        <p className="cta-sub r d1">
+          No agencies. No delays.<br />
+          Direct responses within 2 hours.
+        </p>
+        <div className="contact-grid r d2">
           {CONTACTS.map((c, i) => (
             <a
               key={c.platform}
               href={c.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`contact-card r d${i + 1}`}
+              className="contact-card"
             >
               <span className="contact-platform">{c.platform}</span>
               <span className="contact-arrow-wrap">
@@ -974,26 +979,6 @@ export default function App() {
               </span>
             </a>
           ))}
-        </div>
-      </section>
-
-      {/* ── CTA ──────────────────────────────── */}
-      <section className="cta-section">
-        <h2 className="cta-h r">
-          Ready to build<br />
-          <em>something real?</em>
-        </h2>
-        <p className="cta-sub r d1">
-          No agencies. No delays.<br />
-          Direct responses within 2 hours.
-        </p>
-        <div className="cta-row r d2">
-          <a href="mailto:hello@arcodic.com" className="btn btn-white btn-glow">
-            hello@arcodic.com
-          </a>
-          <a href="#work" className="btn btn-ghost">
-            See our work
-          </a>
         </div>
       </section>
 
@@ -1011,7 +996,7 @@ export default function App() {
         <div>
           <div className="f-h">Studio</div>
           <ul className="f-links">
-            {[["Work","#work"],["Process","#sprint"],["About","#contact"],["24H Landing Sprint","#sprint"]].map(([l,h]) => (
+            {[["Work","#work"],["Process","#sprint"],["Pricing","#pricing"],["Statement","#statement"],["24H Landing Sprint","#sprint"]].map(([l,h]) => (
               <li key={l}><a href={h}>{l}</a></li>
             ))}
           </ul>
