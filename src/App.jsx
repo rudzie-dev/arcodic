@@ -184,7 +184,11 @@ const CSS = `
     will-change: width;
   }
 
-  .dock.open   { width: 468px; }
+  /* +14px over the row's raw content width — .dock-row's own 7px+7px
+     padding was overflowing this box and getting eaten by overflow:
+     hidden below, so the logo and the CTA pill both sat flush against
+     the dock's rounded ends with zero clearance. */
+  .dock.open   { width: 482px; }
   .dock.breathe { animation: dockBreathe .6s var(--ease-spring) forwards; }
 
   .dock-spin {
@@ -720,7 +724,7 @@ const CSS = `
     * { scrollbar-width: none; }
 
     /* dock: hide nav links, pill shrinks to logo + cta only */
-    .dock.open { width: 210px; }
+    .dock.open { width: 224px; } /* same +14px padding fix as desktop */
     .dock-a, .dock-sep { display: none; }
 
     /* hero */
