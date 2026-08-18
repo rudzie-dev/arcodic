@@ -1,8 +1,8 @@
 /**
- * ARcodic — Main Site
+ * ARCODIC — Main Site
  * Stack: React 19 + Vite
  * Fonts: Cal Sans + Inter (both self-hosted, OFL-licensed)
- * Author: ARcodic Studio
+ * Author: ARCODIC Studio
  */
 
 import { useState, useEffect } from "react";
@@ -851,7 +851,7 @@ export default function App() {
         </h2>
         <div className="statement-foot">
           <p className="statement-note r d1">
-            ARcodic is a digital studio building high-performance websites
+            ARCODIC is a digital studio building high-performance websites
             for brands that refuse to blend in. Next.js, TypeScript,
             motion-first — delivered at speed.
           </p>
@@ -1033,7 +1033,7 @@ export default function App() {
         </div>
       </footer>
       <div className="f-base">
-        <span className="f-copy">© 2025 ARcodic. All rights reserved.</span>
+        <span className="f-copy">© 2025 ARCODIC. All rights reserved.</span>
         <span className="f-copy">hello@arcodic.com</span>
       </div>
     </>
