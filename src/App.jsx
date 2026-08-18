@@ -832,7 +832,7 @@ export default function App() {
         <div className="hero-foot">
           <p className="hero-desc">
             Full-stack builds, motion-first UI,<br />
-            and <b>24-hour sprint delivery.</b><br />
+            and <b>landing pages live in 24 hours.</b><br />
             Brief to live — fast, sharp, built to perform.
           </p>
           <div className="hero-btns">
@@ -883,24 +883,25 @@ export default function App() {
       <section className="sprint-section" id="sprint">
         <div className="sprint-left">
           <div className="sprint-num r">24<span>H</span></div>
-          <div className="sprint-label r">Sprint delivery</div>
+          <div className="sprint-label r">Landing page sprint</div>
         </div>
         <div className="sprint-right">
           <h2 className="sprint-h r">
-            Brief to live site.<br />
+            Brief to live landing page.<br />
             <em>One business day.</em>
           </h2>
           <p className="sprint-body r d1">
-            We&#39;ve built the systems, the stack, and the process to move
-            at a speed most studios can&#39;t match — without cutting corners
-            on quality.
+            For landing pages, we&#39;ve built the systems, the stack, and
+            the process to move at a speed most studios can&#39;t match —
+            without cutting corners on quality. Bigger multi-page builds
+            take longer — see pricing below for exact turnaround.
           </p>
           <a
             href="#contact"
             className="btn btn-dark r d2"
             style={{ alignSelf: "flex-start" }}
           >
-            Book a sprint
+            Book a landing page sprint
           </a>
         </div>
       </section>
@@ -917,7 +918,7 @@ export default function App() {
             {
               tag: "Entry", name: "Landing Page", price: "R1,500", priceEnd: "– R2,500",
               desc: "One page. One goal. Built around a single conversion — a call, a WhatsApp, a booking.",
-              meta: "1–2 day turnaround", featured: false,
+              meta: "24-hour turnaround", featured: false,
             },
             {
               tag: "Most Popular", name: "Starter Site", price: "R3,500", priceEnd: "– R5,500",
@@ -1010,7 +1011,7 @@ export default function App() {
         <div>
           <div className="f-h">Studio</div>
           <ul className="f-links">
-            {[["Work","#work"],["Process","#sprint"],["About","#contact"],["24H Sprint","#sprint"]].map(([l,h]) => (
+            {[["Work","#work"],["Process","#sprint"],["About","#contact"],["24H Landing Sprint","#sprint"]].map(([l,h]) => (
               <li key={l}><a href={h}>{l}</a></li>
             ))}
           </ul>
