@@ -1,14 +1,13 @@
 /**
  * ARcodic — Main Site
  * Stack: React 19 + Vite
- * Fonts: Godber (embedded), Fraunces, Syne (Google Fonts)
+ * Fonts: Cal Sans (self-hosted), Syne (Google Fonts)
  * Author: ARcodic Studio
  */
 
 import { useState, useEffect } from "react";
 
-// ─── Godber font embedded as base64 to avoid external font request
-// Godber loaded from /public/fonts/godber.ttf
+// ─── Cal Sans loaded from /public/fonts/cal-sans.woff2 (OFL-licensed)
 
 
 // ─── All CSS lives here — kept in one file intentionally for this
@@ -16,8 +15,8 @@ import { useState, useEffect } from "react";
 const CSS = `
   /* Fonts loaded via <link> in index.html — preloaded in parallel */
   @font-face {
-    font-family: 'Godber';
-    src: url('/fonts/godber.woff2') format('woff2');
+    font-family: 'Cal Sans';
+    src: url('/fonts/cal-sans.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -40,7 +39,7 @@ const CSS = `
     --red:    #D63408;
     --serif:  var(--ui); /* deprecated — use --ui directly */
     --ui:     -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    --logo:   'Godber', sans-serif;
+    --logo:   'Cal Sans', sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
