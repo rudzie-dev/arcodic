@@ -839,9 +839,16 @@ export default function App() {
 
   // Dock: hidden over the hero, fades in once scrolled past it (and
   // back out if scrolled back to the top) — plus a one-time "breathe"
-  // pulse the first time it appears. Also drives the scroll progress bar.
+  // pulse the first time it appears. Also drives the scroll progress bar
+  // and tints the mobile browser chrome (theme-color) to match whichever
+  // section is currently behind the top of the viewport.
   useEffect(() => {
     const hero = document.querySelector(".hero");
+    const sections = [...document.querySelectorAll("[data-theme]")];
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    const THEME_COLOR = { dark: "#121009", light: "#F1EDE6" };
+    let currentTheme = null;
+
     const onScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
       setProgress((scrollTop / (scrollHeight - clientHeight)) * 100);
@@ -855,6 +862,19 @@ export default function App() {
           setBreathe(true);
           setTimeout(() => setBreathe(false), 700);
         }, 250);
+      }
+
+      // whichever section currently spans a reference line near the top
+      // of the viewport is "current" for theme-color purposes
+      const refY = 90;
+      const active = sections.find(el => {
+        const r = el.getBoundingClientRect();
+        return r.top <= refY && r.bottom > refY;
+      });
+      const theme = active?.dataset.theme;
+      if (theme && theme !== currentTheme && themeMeta) {
+        currentTheme = theme;
+        themeMeta.setAttribute("content", THEME_COLOR[theme]);
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -895,7 +915,7 @@ export default function App() {
       </div>
 
       <main>{/* ── HERO ─────────────────────────────── */}
-      <section className="hero">
+      <section className="hero" data-theme="dark">
         <p className="hero-kicker">Digital Studio — Est. 2025</p>
         <div className="hero-wordmark">ARCODIC</div>
         <div className="hero-rule" />
@@ -913,7 +933,7 @@ export default function App() {
       </section>
 
       {/* ── STATEMENT ────────────────────────── */}
-      <section className="statement" id="statement">
+      <section className="statement" id="statement" data-theme="light">
         <h2 className="statement-h r">
           <span className="mask-line"><span>We close the gap between</span></span>
           <span className="mask-line"><span>how good your business is</span></span>
@@ -929,7 +949,7 @@ export default function App() {
       </section>
 
       {/* ── WORK ─────────────────────────────── */}
-      <section className="work-section" id="work">
+      <section className="work-section" id="work" data-theme="dark">
         <p className="section-kicker r">Selected work</p>
         {DEMOS.map((d, i) => (
           <a
@@ -957,7 +977,7 @@ export default function App() {
       </section>
 
       {/* ── SPRINT ───────────────────────────── */}
-      <section className="sprint-section" id="sprint">
+      <section className="sprint-section" id="sprint" data-theme="light">
         <div className="sprint-left">
           <div className="sprint-num r">24<span>H</span></div>
           <div className="sprint-meta">
@@ -994,7 +1014,7 @@ export default function App() {
 
 
       {/* ── PRICING ─────────────────────────── */}
-      <section className="pricing-section" id="pricing">
+      <section className="pricing-section" id="pricing" data-theme="light">
         <p className="section-kicker r" style={{color:'var(--dim)'}}>What it costs</p>
         <h2 className="statement-h r">
           <span className="mask-line"><span>Transparent.</span></span>
@@ -1042,7 +1062,7 @@ export default function App() {
       {/* Merged: was two back-to-back dark sections both asking for
           contact — now one close, ending in the actual contact grid
           instead of a redundant email button. */}
-      <section className="cta-section" id="contact">
+      <section className="cta-section" id="contact" data-theme="dark">
         <h2 className="cta-h r">
           <span className="mask-line"><span>Ready to build</span></span>
           <span className="mask-line"><span><em>something real?</em></span></span>
@@ -1073,7 +1093,7 @@ export default function App() {
       </main>
 
       {/* ── FOOTER ───────────────────────────── */}
-      <footer>
+      <footer data-theme="dark">
         <div>
           <div className="f-wordmark">ARCODIC</div>
           <p className="f-about">
