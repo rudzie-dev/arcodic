@@ -100,6 +100,8 @@ const CSS = `
     /* ── sprint (paper section) ── */
     .sprint-num      { color: #121009; }
     .sprint-label    { color: #6B6460; }
+    .sprint-steps    { color: #6B6460; }
+    .sprint-steps-sep { color: rgba(18,16,9,.25); }
     .sprint-h        { color: #121009; }
     .sprint-body     { color: #6B6460; }
     /* sprint btn on light bg */
@@ -341,6 +343,7 @@ const CSS = `
   */
   .project-row {
     display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
     padding: 30px 0;
     border-top: 1px solid rgba(255,255,255,.055);
     text-decoration: none; color: inherit;
@@ -352,6 +355,18 @@ const CSS = `
   .project-row:hover  { transform: translateX(10px); }
   .project-row:active { transform: translateX(8px) scale(.99); }
 
+  /* colour-coded tile standing in for a screenshot/thumbnail */
+  .project-thumb {
+    width: 56px; height: 56px; flex-shrink: 0;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--logo); font-size: 15px; color: rgba(255,255,255,.92);
+    letter-spacing: -.01em;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 6px 18px rgba(0,0,0,.28);
+    transition: transform .55s var(--ease-spring);
+  }
+  .project-row:hover .project-thumb { transform: scale(1.05); }
+
   .project-tag {
     font-family: var(--ui); font-size: 11px; font-weight: 500;
     letter-spacing: .1em; text-transform: uppercase;
@@ -359,6 +374,8 @@ const CSS = `
     transition: color .3s ease;
   }
   .project-row:hover .project-tag { color: rgba(255,255,255,.4); }
+
+  .project-body { flex: 1; }
 
   .project-name {
     font-family: var(--ui);
@@ -391,7 +408,16 @@ const CSS = `
     line-height: .88; color: var(--ink); letter-spacing: -.01em;
   }
   .sprint-num span { color: var(--red); }
+  .sprint-meta { display: flex; flex-direction: column; gap: 10px; }
   .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim); }
+  .sprint-steps {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--ui); font-size: 11px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--dim);
+  }
+  .sprint-steps-sep { color: rgba(18,16,9,.25); font-size: 10px; }
+  .sprint-steps-live { color: var(--red); }
   .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
   .sprint-h {
     font-family: var(--ui);
@@ -431,12 +457,21 @@ const CSS = `
   .contact-card:hover::after { transform: translateX(0); }
   .contact-card:active { transform: scale(.98); }
 
+  .contact-lead {
+    display: flex; align-items: center; gap: 16px;
+    position: relative; z-index: 1;
+  }
+  .contact-icon {
+    color: rgba(255,255,255,.38); flex-shrink: 0;
+    transition: color .3s ease;
+  }
+  .contact-card:hover .contact-icon { color: #fff; }
+
   .contact-platform {
     font-family: var(--ui);
     font-size: clamp(20px, 2vw, 28px);
     font-weight: 300; font-style: italic;
     color: rgba(255,255,255,.9);
-    position: relative; z-index: 1;
     transition: color .3s ease;
   }
   .contact-card:hover .contact-platform { color: #fff; }
@@ -655,6 +690,23 @@ const CSS = `
   .project-row.r.d2 { transition-delay: .12s; }
   .project-row.r.d3 { transition-delay: .19s; }
 
+  /*
+    Mask-line reveal — for the page's big single-statement headlines
+    (Statement / Pricing / CTA), distinct from the generic fade used
+    on lists (Work rows, Pricing cards, Contact cards). Each line sits
+    in an overflow-hidden mask and slides up from below into view,
+    staggered per line, mirroring the hero wordmark's arrival.
+  */
+  .mask-line { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+  .mask-line > span {
+    display: block;
+    transform: translateY(115%);
+    transition: transform .85s var(--ease-out);
+  }
+  .r.on .mask-line > span { transform: translateY(0); }
+  .mask-line:nth-child(2) > span { transition-delay: .09s; }
+  .mask-line:nth-child(3) > span { transition-delay: .18s; }
+
   /* ─── KEYFRAMES ─────────────────────────── */
   @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
@@ -690,10 +742,12 @@ const CSS = `
 
     /* work */
     .work-section { padding: 56px 24px; }
-    .project-row { flex-wrap: wrap; gap: 6px; padding: 22px 0; }
+    .project-row { flex-wrap: wrap; gap: 10px 8px; padding: 22px 0; }
     .project-row:hover { transform: none; }
     .project-row:active { opacity: .75; }
-    .project-tag { width: 100%; }
+    .project-thumb { width: 40px; height: 40px; border-radius: 10px; font-size: 12px; }
+    .project-tag { width: auto; flex: 1; }
+    .project-body { flex-basis: 100%; order: 5; }
     .project-name { font-size: clamp(24px, 7vw, 34px); }
     .project-arrow { margin-left: auto; }
 
@@ -731,10 +785,13 @@ const CSS = `
 `;
 
 // ─── DATA ────────────────────────────────────────────────────────
+// mono/grad: per-project visual identity for the work-section thumbnail —
+// no screenshots on file, so each project gets a colour-coded tile instead
+// of a bare text row.
 const DEMOS = [
-  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 name search · #3 near me · AI Overview · 5.0★ · 17 reviews" },
-  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · WhatsApp ordering · Local SEO active" },
-  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "UI concept · Hospitality booking flow" },
+  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 name search · #3 near me · AI Overview · 5.0★ · 17 reviews", mono: "MG", grad: ["#2E5BFF", "#12295E"] },
+  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · WhatsApp ordering · Local SEO active", mono: "KC", grad: ["#E8875A", "#7A3B22"] },
+  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "UI concept · Hospitality booking flow", mono: "NA", grad: ["#D63408", "#2A0E04"] },
 ];
 
 const CONTACTS = [
@@ -754,6 +811,40 @@ const Arrow = ({ opacity, weight }) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+  </svg>
+);
+
+// ─── PLATFORM ICONS ────────────────────────────────────────────────
+// Minimal line icons — currentColor so contact-card hover can drive
+// their colour the same way it drives the platform label's.
+const PLATFORM_ICONS = {
+  WhatsApp: (
+    <path
+      d="M4.4 15.6 5.3 12.2A6.5 6.5 0 1 1 8 14.9L4.4 15.6ZM7.2 6.9c.2-.1.4 0 .5.2l.6 1.4c.1.2 0 .4-.1.6l-.6.6c.3.9 1 1.6 1.9 1.9l.6-.6c.2-.1.4-.2.6-.1l1.4.6c.2.1.3.3.2.5-.3.9-1.2 1.4-2.1 1.2-1.9-.4-3.4-1.9-3.8-3.8-.2-.9.3-1.8 1.2-2.1Z"
+      strokeWidth="1.3"
+    />
+  ),
+  Instagram: (
+    <>
+      <rect x="3.5" y="3.5" width="13" height="13" rx="4" strokeWidth="1.3" />
+      <circle cx="10" cy="10" r="3" strokeWidth="1.3" />
+      <circle cx="13.6" cy="6.4" r="0.9" fill="currentColor" stroke="none" />
+    </>
+  ),
+  Email: (
+    <>
+      <rect x="3" y="4.5" width="14" height="11" rx="2" strokeWidth="1.3" />
+      <path d="M3.5 5.5 10 11l6.5-5.5" strokeWidth="1.3" />
+    </>
+  ),
+};
+const PlatformIcon = ({ platform }) => (
+  <svg
+    width="20" height="20" viewBox="0 0 20 20" fill="none"
+    stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+    className="contact-icon" aria-hidden="true"
+  >
+    {PLATFORM_ICONS[platform]}
   </svg>
 );
 
@@ -840,9 +931,9 @@ export default function App() {
       {/* ── STATEMENT ────────────────────────── */}
       <section className="statement" id="statement">
         <h2 className="statement-h r">
-          We close the gap between<br />
-          how good your business is<br />
-          and how good it <em>looks online.</em>
+          <span className="mask-line"><span>We close the gap between</span></span>
+          <span className="mask-line"><span>how good your business is</span></span>
+          <span className="mask-line"><span>and how good it <em>looks online.</em></span></span>
         </h2>
         <div className="statement-foot">
           <p className="statement-note r d1">
@@ -864,8 +955,15 @@ export default function App() {
             rel="noopener noreferrer"
             className={`project-row r d${i + 1}`}
           >
+            <span
+              className="project-thumb"
+              style={{ background: `linear-gradient(135deg, ${d.grad[0]}, ${d.grad[1]})` }}
+              aria-hidden="true"
+            >
+              {d.mono}
+            </span>
             <span className="project-tag">{d.tag}</span>
-            <div style={{flex:1}}>
+            <div className="project-body">
               <span className="project-name">{d.name}</span>
               {d.result && <p style={{fontFamily:'var(--ui)',fontSize:'11px',color:'rgba(255,255,255,.35)',marginTop:'4px',letterSpacing:'.04em'}}>{d.result}</p>}
             </div>
@@ -878,7 +976,16 @@ export default function App() {
       <section className="sprint-section" id="sprint">
         <div className="sprint-left">
           <div className="sprint-num r">24<span>H</span></div>
-          <div className="sprint-label r">Landing page sprint</div>
+          <div className="sprint-meta">
+            <div className="sprint-label r">Landing page sprint</div>
+            <div className="sprint-steps r d1">
+              <span>Brief</span>
+              <span className="sprint-steps-sep">→</span>
+              <span>Build</span>
+              <span className="sprint-steps-sep">→</span>
+              <span className="sprint-steps-live">Live</span>
+            </div>
+          </div>
         </div>
         <div className="sprint-right">
           <h2 className="sprint-h r">
@@ -906,7 +1013,8 @@ export default function App() {
       <section className="pricing-section" id="pricing">
         <p className="section-kicker r" style={{color:'var(--dim)'}}>What it costs</p>
         <h2 className="statement-h r">
-          Transparent.<br /><em>No surprises.</em>
+          <span className="mask-line"><span>Transparent.</span></span>
+          <span className="mask-line"><span><em>No surprises.</em></span></span>
         </h2>
         <div className="pricing-grid r d1">
           {[
@@ -952,8 +1060,8 @@ export default function App() {
           instead of a redundant email button. */}
       <section className="cta-section" id="contact">
         <h2 className="cta-h r">
-          Ready to build<br />
-          <em>something real?</em>
+          <span className="mask-line"><span>Ready to build</span></span>
+          <span className="mask-line"><span><em>something real?</em></span></span>
         </h2>
         <p className="cta-sub r d1">
           No agencies. No delays.<br />
@@ -968,7 +1076,10 @@ export default function App() {
               rel="noopener noreferrer"
               className="contact-card"
             >
-              <span className="contact-platform">{c.platform}</span>
+              <span className="contact-lead">
+                <PlatformIcon platform={c.platform} />
+                <span className="contact-platform">{c.platform}</span>
+              </span>
               <span className="contact-arrow-wrap">
                 <span className="ca-rest">
                   <Arrow opacity=".3" weight="1.4" />
