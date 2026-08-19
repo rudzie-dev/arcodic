@@ -481,12 +481,23 @@ const CSS = `
   .contact-card:hover .contact-arrow { color: #fff; transform: translate(2px, -2px); }
 
 
-  /* ─── PRICING ───────────────────────────── */
+  /*
+    ─── PRICING ───────────────────────────────
+    Was paper/light — same tone as Sprint right above it, so the two
+    sections ran together as one long light block with nothing but a
+    1px line between them, breaking the dark/light alternation every
+    other section pair follows. Flipped to dark (ink) to restore that
+    rhythm: hero(dark) statement(light) work(dark) sprint(light)
+    pricing(dark) cta(dark). Card colours below are the light/dark
+    pair from before, just applied to the opposite card — the
+    "featured" tier now pops as the light card against a dark
+    section instead of a dark card against a light one.
+  */
   .pricing-section {
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
     padding: 96px 64px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(255,255,255,.06);
   }
   .pricing-grid {
     display: grid;
@@ -496,34 +507,34 @@ const CSS = `
     border-radius: 16px;
     overflow: hidden;
     margin-top: 52px;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255,255,255,.09);
   }
   .pricing-card {
-    background: var(--paper);
+    background: rgba(255,255,255,.03);
     padding: 48px 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     transition: background .25s ease;
     position: relative;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255,255,255,.09);
     margin: -1px;
   }
-  .pricing-card:hover { background: #EDE9E2; }
+  .pricing-card:hover { background: rgba(255,255,255,.06); }
   .pricing-card.featured {
-    background: var(--ink);
-    border-color: var(--ink);
+    background: var(--paper);
+    border-color: var(--paper);
   }
-  .pricing-card.featured:hover { background: #1c1c1c; }
+  .pricing-card.featured:hover { background: #E8E3DA; }
   .pricing-tag {
     font-family: var(--ui);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .18em;
     text-transform: uppercase;
-    color: var(--dim);
+    color: rgba(255,255,255,.4);
   }
-  .pricing-card.featured .pricing-tag { color: rgba(255,255,255,.4); }
+  .pricing-card.featured .pricing-tag { color: var(--dim); }
   .pricing-tag-pill {
     display: inline-block;
     background: var(--red);
@@ -542,49 +553,49 @@ const CSS = `
     font-size: clamp(22px, 2.5vw, 32px);
     font-weight: 600;
     line-height: 1.1;
-    color: var(--ink);
+    color: #fff;
   }
-  .pricing-card.featured .pricing-name { color: #fff; }
+  .pricing-card.featured .pricing-name { color: var(--ink); }
   .pricing-price {
     font-family: var(--ui);
     font-size: clamp(28px, 3.5vw, 44px);
     font-weight: 700;
     line-height: 1;
-    color: var(--ink);
+    color: #fff;
     letter-spacing: -.02em;
   }
-  .pricing-card.featured .pricing-price { color: #fff; }
+  .pricing-card.featured .pricing-price { color: var(--ink); }
   .pricing-price span {
     font-family: var(--ui);
     font-size: 13px;
     font-weight: 400;
-    color: var(--dim);
+    color: rgba(255,255,255,.4);
     letter-spacing: 0;
   }
-  .pricing-card.featured .pricing-price span { color: rgba(255,255,255,.4); }
+  .pricing-card.featured .pricing-price span { color: var(--dim); }
   .pricing-divider {
     height: 1px;
-    background: var(--line);
+    background: rgba(255,255,255,.1);
   }
-  .pricing-card.featured .pricing-divider { background: rgba(255,255,255,.08); }
+  .pricing-card.featured .pricing-divider { background: var(--line); }
   .pricing-desc {
     font-family: var(--ui);
     font-size: 13px;
     font-weight: 400;
     line-height: 1.7;
-    color: var(--dim);
+    color: rgba(255,255,255,.5);
     flex: 1;
   }
-  .pricing-card.featured .pricing-desc { color: rgba(255,255,255,.5); }
+  .pricing-card.featured .pricing-desc { color: var(--dim); }
   .pricing-meta {
     font-family: var(--ui);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: .08em;
-    color: var(--dim);
+    color: rgba(255,255,255,.35);
     text-transform: uppercase;
   }
-  .pricing-card.featured .pricing-meta { color: rgba(255,255,255,.35); }
+  .pricing-card.featured .pricing-meta { color: var(--dim); }
 
   @media (max-width: 768px) {
     .pricing-section { padding: 56px 24px; }
@@ -1014,8 +1025,8 @@ export default function App() {
 
 
       {/* ── PRICING ─────────────────────────── */}
-      <section className="pricing-section" id="pricing" data-theme="light">
-        <p className="section-kicker r" style={{color:'var(--dim)'}}>What it costs</p>
+      <section className="pricing-section" id="pricing" data-theme="dark">
+        <p className="section-kicker r">What it costs</p>
         <h2 className="statement-h r">
           <span className="mask-line"><span>Transparent.</span></span>
           <span className="mask-line"><span><em>No surprises.</em></span></span>
@@ -1053,8 +1064,8 @@ export default function App() {
             </div>
           ))}
         </div>
-        <p className="r d2" style={{fontFamily:'var(--ui)',fontSize:'13px',color:'var(--dim)',marginTop:'32px',textAlign:'center'}}>
-          Need something bigger? <a href="#contact" style={{color:'var(--ink)',textDecoration:'none',borderBottom:'1px solid var(--line)'}}>Let's talk custom.</a>
+        <p className="r d2" style={{fontFamily:'var(--ui)',fontSize:'13px',color:'rgba(255,255,255,.5)',marginTop:'32px',textAlign:'center'}}>
+          Need something bigger? <a href="#contact" style={{color:'#fff',textDecoration:'none',borderBottom:'1px solid rgba(255,255,255,.3)'}}>Let's talk custom.</a>
         </p>
       </section>
 
