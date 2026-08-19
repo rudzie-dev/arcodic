@@ -42,6 +42,10 @@ const CSS = `
     --ink:    #101010;
     --paper:  #F1EDE6;
     --dim:    #878075;
+    --dim-on-paper: #6B6460; /* --dim only hits 3.35:1 on --paper — fails AA (4.5:1) for
+                                 normal-size body text. Use this on paper-bg sections instead;
+                                 it's the same colour the light-mode override already proved
+                                 works (4.97:1), just applied unconditionally. */
     --line:   rgba(16,16,16,.07);
     --red:    #D63408;
     --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -308,11 +312,11 @@ const CSS = `
     font-weight: 500; line-height: 1.08; letter-spacing: -.022em;
     max-width: 840px;
   }
-  .statement-h em { font-style: normal; font-weight: 400; color: var(--dim); }
+  .statement-h em { font-style: normal; font-weight: 400; color: var(--dim-on-paper); }
   .statement-foot { display: flex; justify-content: flex-end; margin-top: 52px; }
   .statement-note {
     font-family: var(--ui); font-size: 15px; font-weight: 400;
-    line-height: 1.72; color: var(--dim); max-width: 340px; text-align: right;
+    line-height: 1.72; color: var(--dim-on-paper); max-width: 340px; text-align: right;
   }
 
   /* ─── WORK ──────────────────────────────── */
@@ -396,14 +400,14 @@ const CSS = `
   }
   .sprint-num span { color: var(--red); }
   .sprint-meta { display: flex; flex-direction: column; gap: 10px; }
-  .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim); }
+  .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim-on-paper); }
   .sprint-steps {
     display: flex; align-items: center; gap: 8px;
     font-family: var(--ui); font-size: 11px; font-weight: 600;
     letter-spacing: .12em; text-transform: uppercase;
-    color: var(--dim);
+    color: var(--dim-on-paper);
   }
-  .sprint-steps-sep { color: rgba(16,16,16,.25); font-size: 10px; }
+  .sprint-steps-sep { color: rgba(16,16,16,.35); font-size: 10px; }
   .sprint-steps-live { color: var(--red); }
   .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
   .sprint-h {
@@ -411,8 +415,8 @@ const CSS = `
     font-size: clamp(30px, 3.8vw, 50px);
     font-weight: 500; line-height: 1.12; letter-spacing: -.02em; color: var(--ink);
   }
-  .sprint-h em { font-style: normal; font-weight: 400; color: var(--dim); }
-  .sprint-body { font-family: var(--ui); font-size: 16px; line-height: 1.72; color: var(--dim); max-width: 400px; }
+  .sprint-h em { font-style: normal; font-weight: 400; color: var(--dim-on-paper); }
+  .sprint-body { font-family: var(--ui); font-size: 16px; line-height: 1.72; color: var(--dim-on-paper); max-width: 400px; }
 
   /*
     ─── CONTACT (closes out the CTA section, not standalone) ──
@@ -532,9 +536,9 @@ const CSS = `
     font-weight: 700;
     letter-spacing: .18em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.4);
+    color: rgba(255,255,255,.55);
   }
-  .pricing-card.featured .pricing-tag { color: var(--dim); }
+  .pricing-card.featured .pricing-tag { color: var(--dim-on-paper); }
   .pricing-tag-pill {
     display: inline-block;
     background: var(--red);
@@ -569,10 +573,10 @@ const CSS = `
     font-family: var(--ui);
     font-size: 13px;
     font-weight: 400;
-    color: rgba(255,255,255,.4);
+    color: rgba(255,255,255,.55);
     letter-spacing: 0;
   }
-  .pricing-card.featured .pricing-price span { color: var(--dim); }
+  .pricing-card.featured .pricing-price span { color: var(--dim-on-paper); }
   .pricing-divider {
     height: 1px;
     background: rgba(255,255,255,.1);
@@ -586,16 +590,16 @@ const CSS = `
     color: rgba(255,255,255,.5);
     flex: 1;
   }
-  .pricing-card.featured .pricing-desc { color: var(--dim); }
+  .pricing-card.featured .pricing-desc { color: var(--dim-on-paper); }
   .pricing-meta {
     font-family: var(--ui);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: .08em;
-    color: rgba(255,255,255,.35);
+    color: rgba(255,255,255,.55);
     text-transform: uppercase;
   }
-  .pricing-card.featured .pricing-meta { color: var(--dim); }
+  .pricing-card.featured .pricing-meta { color: var(--dim-on-paper); }
 
   @media (max-width: 768px) {
     .pricing-section { padding: 56px 24px; }
@@ -660,8 +664,8 @@ const CSS = `
     display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px;
   }
   .f-wordmark { font-family: var(--logo); font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
-  .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.26); line-height: 1.65; max-width: 200px; }
-  .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.18); margin-bottom: 18px; }
+  .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.65; max-width: 200px; }
+  .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 18px; }
   .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
   .f-links a  {
     font-family: var(--ui); font-size: 14px; color: rgba(255,255,255,.6);
@@ -685,7 +689,7 @@ const CSS = `
     padding: 24px 64px;
     display: flex; justify-content: space-between;
   }
-  .f-copy { font-family: var(--ui); font-size: 12px; color: rgba(255,255,255,.16); }
+  .f-copy { font-family: var(--ui); font-size: 12px; color: rgba(255,255,255,.5); }
 
   /* ─── SCROLL REVEAL ─────────────────────── */
   .r {
