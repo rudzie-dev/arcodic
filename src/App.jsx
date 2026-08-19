@@ -957,9 +957,9 @@ export default function App() {
         <div className="hero-rule" />
         <div className="hero-foot">
           <p className="hero-desc">
-            Full-stack builds, motion-first UI,<br />
-            and <b>landing pages live in 24 hours.</b><br />
-            Brief to live — fast, sharp, built to perform.
+            I build fast, motion-driven websites that make<br />
+            people stop scrolling and start clicking.<br />
+            <b>Live in 24 hours.</b> Brief to launch.
           </p>
           <div className="hero-btns">
             <a href="#contact" className="btn btn-white">Start a project</a>
