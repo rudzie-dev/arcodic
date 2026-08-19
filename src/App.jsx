@@ -604,9 +604,25 @@ const CSS = `
     .pricing-card.featured { order: -1; }
   }
 
-  /* ─── CTA ───────────────────────────────── */
+  /*
+    ─── CTA ───────────────────────────────────
+    Sits right after Pricing, and both were plain var(--ink) — same
+    problem as the Sprint/Pricing seam, just one section later: only
+    Pricing's faint border-bottom stood between two identical dark
+    fills. Flipping CTA to paper (matching the alternation everywhere
+    else) would undercut the whole point of a bold, dark closing
+    moment, so instead it gets a genuinely deeper black than the
+    content sections (a "spotlight" shade, not just var(--ink) again)
+    plus a visible red glow bleeding down from the top edge — using
+    the actual brand accent to mark the seam deliberately, rather
+    than another near-black tint that risks the same muddy/brown
+    read the base ink colour just got fixed for.
+  */
   .cta-section {
-    background: var(--ink); padding: 132px 64px;
+    background:
+      linear-gradient(180deg, rgba(214,52,8,.07) 0%, transparent 22%),
+      #0A0A0A;
+    padding: 132px 64px;
     text-align: center; position: relative; overflow: hidden;
   }
   /* ambient red glow rising from below — signals action zone */
