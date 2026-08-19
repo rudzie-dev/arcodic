@@ -246,9 +246,20 @@ const CSS = `
     padding: 0 64px 80px;
     position: relative; overflow: hidden;
   }
+  /* ambient glow — a blurred blob drifting slowly behind the copy,
+     instead of a static gradient wash */
   .hero::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(ellipse 60% 48% at 58% 28%, rgba(214,52,8,.055) 0%, transparent 65%);
+    content: ''; position: absolute; pointer-events: none;
+    top: -10%; left: 38%;
+    width: 55vw; height: 55vw; max-width: 640px; max-height: 640px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214,52,8,.4) 0%, transparent 70%);
+    filter: blur(90px);
+    will-change: transform;
+    animation: heroGlowDrift 22s var(--ease-spring) infinite alternate;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero::before { animation: none; }
   }
 
   .hero-kicker {
@@ -733,6 +744,12 @@ const CSS = `
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
   @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
+  @keyframes heroGlowDrift {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-12%, 10%) scale(1.12); }
+    66%  { transform: translate(8%, -8%) scale(0.9); }
+    100% { transform: translate(-6%, 14%) scale(1.05); }
+  }
 
   /* ─── MOBILE ────────────────────────────── */
   @media (max-width: 768px) {
