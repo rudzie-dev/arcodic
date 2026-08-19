@@ -92,9 +92,14 @@ const CSS = `
     .dock-cta:hover { background: var(--red); color: #fff; }
 
     /* ── statement (paper section) ── */
-    /* bg is already #F1EDE6 — just ensure text contrast */
-    .statement-h     { color: #101010; }
-    .statement-h em  { color: #6B6460; }
+    /* bg is already #F1EDE6 — just ensure text contrast.
+       Scoped to .statement — .statement-h is also reused by
+       Pricing's dark headline, and an unscoped rule here was
+       forcing ink-black text onto that ink-black background,
+       making "Transparent." render invisible for anyone with
+       an OS light-mode preference. */
+    .statement .statement-h     { color: #101010; }
+    .statement .statement-h em  { color: #6B6460; }
     .statement-note  { color: #6B6460; }
 
     /* ── sprint (paper section) ── */
