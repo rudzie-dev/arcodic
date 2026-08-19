@@ -1064,7 +1064,7 @@ export default function App() {
               meta: "24-hour turnaround", featured: false,
             },
             {
-              tag: "Most Popular", name: "Starter Site", price: "R3,500", priceEnd: "– R5,500",
+              tag: "Standard", name: "Starter Site", price: "R3,500", priceEnd: "– R5,500",
               desc: "A proper multi-page site with navigation. Everything a local business needs to be taken seriously online.",
               meta: "3–5 day turnaround", featured: true,
             },
