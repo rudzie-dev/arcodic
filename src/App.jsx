@@ -828,9 +828,15 @@ const CSS = `
 
   /*
     ─── LIGHT MODE ──────────────────────────────
-    Strategy: sections that are dark (#101010) stay
-    dark — they're intentional design moments.
-    Only the paper sections, dock, and context menu adapt.
+    True inversion, not a contrast tweak: every section that's dark
+    in the default (dark-mode) design — Hero, Work, Pricing, CTA,
+    Footer — flips to light here, AND every section that's already
+    light — Statement, Sprint — flips to dark. Skipping that second
+    half was the earlier bug: leaving Statement/Sprint alone while
+    everything else turned light meant the whole page collapsed to
+    one flat paper colour, losing the alternation the design depends
+    on. Dock and context menu (floating chrome, not page sections)
+    get their own light-glass treatment either way.
     All hardcoded rgba values are explicitly
     overridden here to guarantee contrast.
 
@@ -918,28 +924,37 @@ const CSS = `
     /* project-thumb tiles keep their own brand-gradient colours —
        self-contained, reads fine against either section tone */
 
-    /* ── statement (paper section) ── */
-    /* bg is already #F1EDE6 — just ensure text contrast.
-       Scoped to .statement — .statement-h is also reused by
-       Pricing's dark headline, and an unscoped rule here was
-       forcing ink-black text onto that ink-black background,
-       making "Transparent." render invisible for anyone with
-       an OS light-mode preference. */
-    .statement .statement-h     { color: #101010; }
-    .statement .statement-h em  { color: #6B6460; }
-    .statement-note  { color: #6B6460; }
+    /* ── statement (was the always-light "paper" section) ──
+       Every other section just swapped dark<->light. This one was
+       already light in dark mode, so leaving it alone in light mode
+       would mean it — plus every dark section that just flipped TO
+       light — all end up the same flat paper colour, killing the
+       alternation the whole page is built on. It flips to dark here,
+       same as its dark-mode neighbours flip to light.
+       .statement-h is shared with Pricing's headline (inherits colour
+       from whichever section it's in), so this stays scoped to
+       .statement rather than touching the bare class. */
+    .statement { background: #101010; color: #F1EDE6; border-bottom-color: rgba(255,255,255,.06); }
+    .statement .statement-h     { color: #F1EDE6; }
+    .statement .statement-h em  { color: rgba(241,237,230,.55); }
+    .statement-note  { color: rgba(241,237,230,.6); }
 
-    /* ── sprint (paper section) ── */
-    .sprint-num      { color: #101010; }
-    .sprint-label    { color: #6B6460; }
-    .sprint-steps    { color: #6B6460; }
-    .sprint-steps-sep { color: rgba(16,16,16,.25); }
-    .sprint-h        { color: #101010; }
-    .sprint-body     { color: #6B6460; }
-    /* sprint btn on light bg */
+    /* ── sprint (was the always-light "paper" section) — same flip ── */
+    .sprint-section  { background: #101010; color: #F1EDE6; border-bottom-color: rgba(255,255,255,.06); }
+    .sprint-left     { border-color: rgba(255,255,255,.08); } /* border-right desktop, border-bottom mobile */
+    .sprint-num      { color: #F1EDE6; }
+    .sprint-label    { color: rgba(241,237,230,.6); }
+    .sprint-steps    { color: rgba(241,237,230,.6); }
+    .sprint-steps-sep { color: rgba(255,255,255,.3); }
+    .sprint-h        { color: #F1EDE6; }
+    .sprint-h em     { color: rgba(241,237,230,.55); }
+    .sprint-body     { color: rgba(241,237,230,.6); }
+    /* btn-dark was a dark pill on Sprint's light bg — Sprint is dark
+       now, so it inverts to a light pill, same pattern hero's
+       btn-white uses in reverse */
     .sprint-right .btn-dark {
-      background: #101010;
-      color: #F1EDE6;
+      background: #F1EDE6;
+      color: #101010;
     }
     .sprint-right .btn-dark:hover {
       background: var(--red);
