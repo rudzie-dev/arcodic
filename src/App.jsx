@@ -920,7 +920,10 @@ export default function App() {
 
       const threshold = hero ? hero.offsetHeight * 0.7 : window.innerHeight * 0.7;
       const past = scrollTop > threshold;
-      setDockVisible(past);
+      // also hide near the very bottom — fixed-position dock otherwise
+      // sits on top of the footer's last lines with nothing to yield to
+      const nearBottom = scrollHeight - (scrollTop + clientHeight) < 160;
+      setDockVisible(past && !nearBottom);
       if (past && !hasBreathed.current) {
         hasBreathed.current = true;
         setTimeout(() => {
