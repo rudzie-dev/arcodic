@@ -1010,7 +1010,7 @@ export default function App() {
           </p>
           <div className="hero-btns">
             <a href="#contact" className="btn btn-white">Start a project</a>
-            <a href="#work"    className="btn btn-ghost">See our work</a>
+            <a href="#work"    className="btn btn-ghost">See my work</a>
           </div>
         </div>
       </section>
@@ -1018,7 +1018,7 @@ export default function App() {
       {/* ── STATEMENT ────────────────────────── */}
       <section className="statement" id="statement" data-theme="light">
         <h2 className="statement-h r">
-          <span className="mask-line"><span>We close the gap between</span></span>
+          <span className="mask-line"><span>I close the gap between</span></span>
           <span className="mask-line"><span>how good your business is</span></span>
           <span className="mask-line"><span>and how good it <em>looks online.</em></span></span>
         </h2>
@@ -1080,7 +1080,7 @@ export default function App() {
             <em>One business day.</em>
           </h2>
           <p className="sprint-body r d1">
-            For landing pages, we&#39;ve built the systems, the stack, and
+            For landing pages, I&#39;ve built the systems, the stack, and
             the process to move at a speed most studios can&#39;t match —
             without cutting corners on quality. Bigger multi-page builds
             take longer — see pricing below for exact turnaround.
