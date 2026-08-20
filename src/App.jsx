@@ -408,13 +408,31 @@ const CSS = `
   .sprint-left {
     padding: 96px 64px; border-right: 1px solid var(--line);
     display: flex; flex-direction: column; justify-content: flex-end; gap: 16px;
+    position: relative; overflow: hidden;
+  }
+  /* same ambient red glow language as the hero blob + CTA glow — ties
+     the site's one recurring "brand accent" motif to its biggest
+     proof-point number instead of leaving it as flat type */
+  .sprint-left::before {
+    content: ''; position: absolute; pointer-events: none;
+    bottom: -20%; right: -10%;
+    width: 42vw; height: 42vw; max-width: 420px; max-height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214,52,8,.22) 0%, transparent 70%);
+    filter: blur(70px);
+    will-change: transform;
+    animation: heroGlowDrift 22s var(--ease-spring) infinite alternate;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sprint-left::before { animation: none; }
   }
   .sprint-num {
     font-family: var(--logo);
     font-size: clamp(88px, 13vw, 172px);
     line-height: .88; color: var(--ink); letter-spacing: -.01em;
+    position: relative;
   }
-  .sprint-num span { color: var(--red); }
+  .sprint-num span { color: var(--red); text-shadow: 0 0 42px rgba(214,52,8,.35); }
   .sprint-meta { display: flex; flex-direction: column; gap: 10px; }
   .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim-on-paper); }
   .sprint-steps {
