@@ -400,12 +400,15 @@ const CSS = `
   }
 
   /* ── preview strip: hover-to-reveal, 3 panels per project ──
-     No real screenshots on file yet (see DEMOS) — these are clearly-
-     stylised abstract mockups (browser chrome + wireframe blocks)
-     tinted with the project's own brand gradient, not fake photos of
-     the real sites. Swap to actual screenshots later by replacing
-     <PreviewMock> with an <img>; the slide-open mechanism doesn't
-     need to change. */
+     Real screenshots (see DEMOS' previews array) were captured at
+     1366×768 desktop (hero/grid) and a Galaxy S20 Ultra's native
+     1440×3200 (mobile) — 16:9 and 9:20 respectively, almost exactly
+     (1366:768 is 1.7786 vs 16:9's 1.7778 — a 0.05% difference, and
+     1440:3200 reduces to exactly 9:20). Panels are boxed at those
+     same ratios so the real screenshots fill them edge to edge
+     instead of getting cropped by object-fit for not matching the
+     box shape. Any project still on <PreviewMock> gets the same
+     boxes, so swapping in real screenshots later is a drop-in. */
   .project-preview-wrap {
     display: grid;
     grid-template-rows: 0fr;
@@ -414,13 +417,17 @@ const CSS = `
   .project-row:hover .project-preview-wrap { grid-template-rows: 1fr; }
   .project-preview {
     overflow: hidden;
-    display: flex; gap: 14px;
+    display: flex; align-items: flex-start; gap: 14px;
+    height: 220px; /* shared height — each panel's width comes from
+                       its own aspect-ratio, so all three line up
+                       cleanly along the bottom despite being very
+                       different shapes (two wide, one tall) */
   }
   .project-preview > * { margin-top: 22px; }
 
   .preview-mock {
-    flex: 1; min-width: 0;
-    aspect-ratio: 4 / 3;
+    flex: none; height: 100%; width: auto;
+    aspect-ratio: 16 / 9;
     border-radius: 10px;
     overflow: hidden;
     display: flex; flex-direction: column;
@@ -431,8 +438,8 @@ const CSS = `
   .project-row:hover .preview-mock { opacity: 1; transform: translateY(0); }
   .preview-mock:nth-child(2) { transition-delay: .05s; }
   .preview-mock:nth-child(3) { transition-delay: .1s; }
-  img.preview-mock { width: 100%; height: 100%; object-fit: cover; }
-  .preview-mock-mobile { flex: 0 0 108px; aspect-ratio: 9 / 16; }
+  img.preview-mock { object-fit: cover; }
+  .preview-mock-mobile { aspect-ratio: 9 / 20; }
   .preview-chrome { display: flex; gap: 4px; padding: 8px 10px; background: rgba(0,0,0,.15); flex-shrink: 0; }
   .preview-chrome span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.4); }
   .preview-body { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
