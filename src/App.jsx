@@ -431,6 +431,7 @@ const CSS = `
   .project-row:hover .preview-mock { opacity: 1; transform: translateY(0); }
   .preview-mock:nth-child(2) { transition-delay: .05s; }
   .preview-mock:nth-child(3) { transition-delay: .1s; }
+  img.preview-mock { width: 100%; height: 100%; object-fit: cover; }
   .preview-mock-mobile { flex: 0 0 108px; aspect-ratio: 9 / 16; }
   .preview-chrome { display: flex; gap: 4px; padding: 8px 10px; background: rgba(0,0,0,.15); flex-shrink: 0; }
   .preview-chrome span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.4); }
@@ -1098,9 +1099,9 @@ const CSS = `
 // no screenshots on file, so each project gets a colour-coded tile instead
 // of a bare text row.
 const DEMOS = [
-  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 name search · #3 near me · AI Overview · 5.0★ · 17 reviews", mono: "MG", grad: ["#2E5BFF", "#12295E"] },
-  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · WhatsApp ordering · Local SEO active", mono: "KC", grad: ["#E8875A", "#7A3B22"] },
-  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "UI concept · Hospitality booking flow", mono: "NA", grad: ["#D63408", "#2A0E04"] },
+  { tag: "Technical Services", name: "MG Installations", href: "https://mginstallations.co.za", result: "#1 name search · #3 near me · AI Overview · 5.0★ · 17 reviews", mono: "MG", grad: ["#2E5BFF", "#12295E"], previews: ["/work/mg-hero.jpg", "/work/mg-grid.jpg", "/work/mg-mobile.jpg"] },
+  { tag: "Home Bakery",        name: "Kind Crumb",        href: "https://kindcrumbtreats.co.za",  result: "Live · WhatsApp ordering · Local SEO active", mono: "KC", grad: ["#E8875A", "#7A3B22"], previews: ["/work/kc-hero.jpg", "/work/kc-grid.jpg", "/work/kc-mobile.jpg"] },
+  { tag: "UI Concept",         name: "Noir Atelier",      href: "https://lumiere-salon.arcodic.com", result: "UI concept · Hospitality booking flow", mono: "NA", grad: ["#D63408", "#2A0E04"], previews: ["/work/na-hero.jpg", "/work/na-grid.jpg", "/work/na-mobile.jpg"] },
 ];
 
 const CONTACTS = [
@@ -1399,9 +1400,19 @@ export default function App() {
             </div>
             <div className="project-preview-wrap">
               <div className="project-preview">
-                <PreviewMock variant="hero"   grad={d.grad} />
-                <PreviewMock variant="grid"   grad={d.grad} />
-                <PreviewMock variant="mobile" grad={d.grad} />
+                {["hero", "grid", "mobile"].map((variant, vi) => (
+                  d.previews?.[vi] ? (
+                    <img
+                      key={variant}
+                      src={d.previews[vi]}
+                      alt={`${d.name} — ${variant} view`}
+                      loading="lazy"
+                      className={`preview-mock preview-mock-${variant}`}
+                    />
+                  ) : (
+                    <PreviewMock key={variant} variant={variant} grad={d.grad} />
+                  )
+                ))}
               </div>
             </div>
           </a>
