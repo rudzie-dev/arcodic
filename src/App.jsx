@@ -58,88 +58,6 @@ const CSS = `
     --scrollbar-thumb-hover: rgba(241,237,230,.32);
   }
 
-  /*
-    ─── LIGHT MODE ──────────────────────────────
-    Strategy: sections that are dark (#101010) stay
-    dark — they're intentional design moments.
-    Only the paper sections and dock adapt.
-    All hardcoded rgba values are explicitly
-    overridden here to guarantee contrast.
-  */
-  @media (prefers-color-scheme: light) {
-
-    /* scrollbar — dark thumb on light track, red on hover */
-    ::-webkit-scrollbar-thumb {
-      background: rgba(16,16,16,.18);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--red);
-    }
-    * { scrollbar-color: rgba(16,16,16,.18) transparent; }
-
-    /* ── dock: light glass pill ── */
-    .dock {
-      background: rgba(241,237,230,.75);
-      border-color: rgba(16,16,16,.12);
-      box-shadow: 0 4px 24px rgba(16,16,16,.1), inset 0 1px 0 rgba(255,255,255,.7);
-    }
-    .dock-logo { color: #101010; }
-    .dock-sep  { background: rgba(16,16,16,.12); }
-    .dock-a    { color: rgba(16,16,16,.5); }
-    .dock-a:hover { color: #101010; }
-    .dock-a::after { background: rgba(16,16,16,.6); }
-    .dock-cta  { background: #101010; color: #F1EDE6; }
-    .dock-cta:hover { background: var(--red); color: #fff; }
-
-    /* ── context menu: light glass card ── */
-    /* html-prefixed for extra specificity — the base (dark) .ctx-menu
-       rule lives later in this stylesheet, in the CONTEXT MENU section,
-       and same-specificity + later-source-order would otherwise win
-       over this media query whenever it actually matches */
-    html .ctx-menu {
-      background: rgba(241,237,230,.92);
-      border-color: rgba(16,16,16,.12);
-      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
-    }
-    html .ctx-item { color: rgba(16,16,16,.65); }
-    html .ctx-item:hover { background: rgba(214,52,8,.12); color: #101010; }
-    html .ctx-sep { background: rgba(16,16,16,.1); }
-    html .ctx-foot { color: rgba(16,16,16,.35); }
-
-    /* ── statement (paper section) ── */
-    /* bg is already #F1EDE6 — just ensure text contrast.
-       Scoped to .statement — .statement-h is also reused by
-       Pricing's dark headline, and an unscoped rule here was
-       forcing ink-black text onto that ink-black background,
-       making "Transparent." render invisible for anyone with
-       an OS light-mode preference. */
-    .statement .statement-h     { color: #101010; }
-    .statement .statement-h em  { color: #6B6460; }
-    .statement-note  { color: #6B6460; }
-
-    /* ── sprint (paper section) ── */
-    .sprint-num      { color: #101010; }
-    .sprint-label    { color: #6B6460; }
-    .sprint-steps    { color: #6B6460; }
-    .sprint-steps-sep { color: rgba(16,16,16,.25); }
-    .sprint-h        { color: #101010; }
-    .sprint-body     { color: #6B6460; }
-    /* sprint btn on light bg */
-    .sprint-right .btn-dark {
-      background: #101010;
-      color: #F1EDE6;
-    }
-    .sprint-right .btn-dark:hover {
-      background: var(--red);
-      color: #fff;
-    }
-
-    /* ── cta (paper section) ── */
-    /* cta-section is dark ink — stays dark, no change needed */
-
-    /* ── footer links (dark section) — no change needed ── */
-  }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -895,6 +813,101 @@ const CSS = `
     .cta-section { padding: 48px 24px 64px; }
     .cta-h { font-size: clamp(34px, 7vw, 52px); margin-bottom: 20px; }
     .cta-sub { margin-bottom: 28px; }
+  }
+
+  /*
+    ─── LIGHT MODE ──────────────────────────────
+    Strategy: sections that are dark (#101010) stay
+    dark — they're intentional design moments.
+    Only the paper sections, dock, and context menu adapt.
+    All hardcoded rgba values are explicitly
+    overridden here to guarantee contrast.
+
+    Deliberately the LAST block in this stylesheet. Every rule below
+    matches a selector that already has an unconditional (dark-mode)
+    declaration earlier in the file, at equal specificity — a single
+    class or pseudo-element, same as its dark counterpart. CSS gives
+    the later same-specificity rule the win regardless of which one
+    sits inside a media query, so if this block lived any earlier
+    (it used to sit right after :root), every one of those matching
+    dark declarations further down the file would silently override
+    it whenever the media query actually matched, leaving light mode
+    partially dead — which is exactly what was happening: the dock,
+    the scrollbar thumb, and the context menu never actually adapted.
+    Keeping this block last is what makes it reliably win instead of
+    relying on ad hoc specificity bumps (like the .statement-scoped
+    and .sprint-right-scoped rules below still use, since scoping was
+    already needed there for a different reason — .statement-h and
+    .btn-dark are each reused by more than one section).
+  */
+  @media (prefers-color-scheme: light) {
+
+    /* scrollbar — dark thumb on light track, red on hover */
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16,16,16,.18);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--red);
+    }
+    * { scrollbar-color: rgba(16,16,16,.18) transparent; }
+
+    /* ── dock: light glass pill ── */
+    .dock {
+      background: rgba(241,237,230,.75);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 4px 24px rgba(16,16,16,.1), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .dock-logo { color: #101010; }
+    .dock-sep  { background: rgba(16,16,16,.12); }
+    .dock-a    { color: rgba(16,16,16,.5); }
+    .dock-a:hover { color: #101010; }
+    .dock-a::after { background: rgba(16,16,16,.6); }
+    .dock-cta  { background: #101010; color: #F1EDE6; }
+    .dock-cta:hover { background: var(--red); color: #fff; }
+
+    /* ── context menu: light glass card ── */
+    .ctx-menu {
+      background: rgba(241,237,230,.92);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .ctx-item { color: rgba(16,16,16,.65); }
+    .ctx-item:hover { background: rgba(214,52,8,.12); color: #101010; }
+    .ctx-sep { background: rgba(16,16,16,.1); }
+    .ctx-foot { color: rgba(16,16,16,.35); }
+
+    /* ── statement (paper section) ── */
+    /* bg is already #F1EDE6 — just ensure text contrast.
+       Scoped to .statement — .statement-h is also reused by
+       Pricing's dark headline, and an unscoped rule here was
+       forcing ink-black text onto that ink-black background,
+       making "Transparent." render invisible for anyone with
+       an OS light-mode preference. */
+    .statement .statement-h     { color: #101010; }
+    .statement .statement-h em  { color: #6B6460; }
+    .statement-note  { color: #6B6460; }
+
+    /* ── sprint (paper section) ── */
+    .sprint-num      { color: #101010; }
+    .sprint-label    { color: #6B6460; }
+    .sprint-steps    { color: #6B6460; }
+    .sprint-steps-sep { color: rgba(16,16,16,.25); }
+    .sprint-h        { color: #101010; }
+    .sprint-body     { color: #6B6460; }
+    /* sprint btn on light bg */
+    .sprint-right .btn-dark {
+      background: #101010;
+      color: #F1EDE6;
+    }
+    .sprint-right .btn-dark:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* ── cta (paper section) ── */
+    /* cta-section is dark ink — stays dark, no change needed */
+
+    /* ── footer links (dark section) — no change needed ── */
   }
 `;
 
