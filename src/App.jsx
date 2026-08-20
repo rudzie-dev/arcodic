@@ -91,6 +91,21 @@ const CSS = `
     .dock-cta  { background: #101010; color: #F1EDE6; }
     .dock-cta:hover { background: var(--red); color: #fff; }
 
+    /* ── context menu: light glass card ── */
+    /* html-prefixed for extra specificity — the base (dark) .ctx-menu
+       rule lives later in this stylesheet, in the CONTEXT MENU section,
+       and same-specificity + later-source-order would otherwise win
+       over this media query whenever it actually matches */
+    html .ctx-menu {
+      background: rgba(241,237,230,.92);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    html .ctx-item { color: rgba(16,16,16,.65); }
+    html .ctx-item:hover { background: rgba(214,52,8,.12); color: #101010; }
+    html .ctx-sep { background: rgba(16,16,16,.1); }
+    html .ctx-foot { color: rgba(16,16,16,.35); }
+
     /* ── statement (paper section) ── */
     /* bg is already #F1EDE6 — just ensure text contrast.
        Scoped to .statement — .statement-h is also reused by
@@ -251,6 +266,43 @@ const CSS = `
   }
   .dock-cta:hover  { background: var(--red); color: #fff; transform: translateY(-1px); }
   .dock-cta:active { transform: scale(.96); }
+
+  /* ─── CONTEXT MENU ──────────────────────── */
+  /* replaces the browser's default right-click menu with a glass
+     card in the dock's own visual language — same blur/border/shadow
+     recipe, so it reads as part of the same UI instead of a bolt-on */
+  .ctx-menu {
+    position: fixed; z-index: 900;
+    min-width: 200px; padding: 6px;
+    border-radius: 14px;
+    background: rgba(16,16,16,.82);
+    backdrop-filter: blur(28px) saturate(1.8);
+    -webkit-backdrop-filter: blur(28px) saturate(1.8);
+    border: 1px solid rgba(255,255,255,.11);
+    box-shadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    opacity: 0; transform: scale(.96);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity .15s ease, transform .15s var(--ease-spring);
+  }
+  .ctx-menu.ready { opacity: 1; transform: scale(1); pointer-events: auto; }
+  .ctx-item {
+    display: block; width: 100%;
+    padding: 9px 12px; border-radius: 9px;
+    font-family: var(--ui); font-size: 13px; font-weight: 500;
+    color: rgba(255,255,255,.75);
+    text-decoration: none; background: none; border: none; cursor: pointer;
+    text-align: left;
+    transition: background .15s ease, color .15s ease;
+  }
+  .ctx-item:hover { background: rgba(214,52,8,.16); color: #fff; }
+  .ctx-sep { height: 1px; background: rgba(255,255,255,.08); margin: 5px 8px; }
+  .ctx-foot {
+    display: block; padding: 8px 12px 4px;
+    font-family: var(--ui); font-size: 10px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.28);
+  }
 
   /* ─── HERO ──────────────────────────────── */
   .hero {
@@ -913,7 +965,10 @@ export default function App() {
   const [dockVisible, setDockVisible] = useState(false);
   const [breathe,     setBreathe]     = useState(false);
   const [progress,    setProgress]    = useState(0);
+  const [ctxMenu,     setCtxMenu]     = useState({ visible: false, ready: false, x: 0, y: 0 });
+  const [linkCopied,  setLinkCopied]  = useState(false);
   const hasBreathed = useRef(false);
+  const ctxMenuRef = useRef(null);
 
   // Dock: hidden over the hero, fades in once scrolled past it (and
   // back out if scrolled back to the top) — plus a one-time "breathe"
@@ -972,6 +1027,61 @@ export default function App() {
     document.querySelectorAll(".r").forEach(el => io.observe(el));
     return () => io.disconnect();
   }, []);
+
+  // Custom right-click menu — replaces the browser default everywhere
+  // on the page. Opens at the cursor, closes on an outside click,
+  // Escape, scroll, or resize; right-clicking elsewhere while it's
+  // open just relocates it instead of requiring a second dismiss.
+  useEffect(() => {
+    const closeMenu = () => setCtxMenu(m => (m.visible ? { ...m, visible: false, ready: false } : m));
+    const onContextMenu = (e) => {
+      e.preventDefault();
+      setCtxMenu({ visible: true, ready: false, x: e.clientX, y: e.clientY });
+    };
+    const onMouseDown = (e) => {
+      if (ctxMenuRef.current && !ctxMenuRef.current.contains(e.target)) closeMenu();
+    };
+    const onKeyDown = (e) => { if (e.key === "Escape") closeMenu(); };
+
+    document.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("scroll", closeMenu, { passive: true, capture: true });
+    window.addEventListener("resize", closeMenu);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("contextmenu", onContextMenu);
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("scroll", closeMenu, true);
+      window.removeEventListener("resize", closeMenu);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  // Clamp the menu into the viewport once its real size is known —
+  // it first mounts at the raw cursor position (invisible via
+  // opacity:0), gets measured, then fades in at the corrected spot.
+  useEffect(() => {
+    if (!ctxMenu.visible || ctxMenu.ready) return;
+    const el = ctxMenuRef.current;
+    if (!el) return;
+    // offsetWidth/Height, not getBoundingClientRect — the menu is
+    // still mid-scale-in (transform: scale(.96)) at measurement time,
+    // and a bounding rect would report the shrunk, transformed size
+    const x = Math.max(8, Math.min(ctxMenu.x, window.innerWidth - el.offsetWidth - 8));
+    const y = Math.max(8, Math.min(ctxMenu.y, window.innerHeight - el.offsetHeight - 8));
+    setCtxMenu(m => ({ ...m, x, y, ready: true }));
+  }, [ctxMenu.visible, ctxMenu.ready, ctxMenu.x, ctxMenu.y]);
+
+  const closeCtxMenu = () => setCtxMenu(m => ({ ...m, visible: false, ready: false }));
+  const copyPageLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setLinkCopied(true);
+      setTimeout(() => { setLinkCopied(false); closeCtxMenu(); }, 900);
+    } catch {
+      closeCtxMenu();
+    }
+  };
 
   return (
     <>
@@ -1210,6 +1320,25 @@ export default function App() {
       <div className="f-base">
         <span className="f-copy">© {new Date().getFullYear()} ARCODIC. All rights reserved.</span>
       </div>
+
+      {/* ── CONTEXT MENU ─────────────────────── */}
+      {ctxMenu.visible && (
+        <div
+          ref={ctxMenuRef}
+          className={`ctx-menu${ctxMenu.ready ? " ready" : ""}`}
+          style={{ left: ctxMenu.x, top: ctxMenu.y }}
+          role="menu"
+        >
+          <a href="#contact" className="ctx-item" role="menuitem" onClick={closeCtxMenu}>Start a project</a>
+          <a href="#work"    className="ctx-item" role="menuitem" onClick={closeCtxMenu}>See my work</a>
+          <a href="mailto:hello@arcodic.com" className="ctx-item" role="menuitem" onClick={closeCtxMenu}>Email me</a>
+          <button type="button" className="ctx-item" role="menuitem" onClick={copyPageLink}>
+            {linkCopied ? "Copied!" : "Copy link"}
+          </button>
+          <div className="ctx-sep" />
+          <span className="ctx-foot">ARCODIC · Est. 2025</span>
+        </div>
+      )}
     </>
   );
 }
