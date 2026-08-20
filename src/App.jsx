@@ -1187,7 +1187,7 @@ export default function App() {
         <div>
           <div className="f-h">Site</div>
           <ul className="f-links">
-            {[["Work","#work"],["Process","#sprint"],["Pricing","#pricing"],["Statement","#statement"],["24H Landing Sprint","#sprint"]].map(([l,h]) => (
+            {[["Work","#work"],["Process","#sprint"],["Pricing","#pricing"],["Statement","#statement"]].map(([l,h]) => (
               <li key={l}><a href={h}>{l}</a></li>
             ))}
           </ul>
@@ -1203,15 +1203,14 @@ export default function App() {
         <div>
           <div className="f-h">Contact</div>
           <ul className="f-links">
-            {[["hello@arcodic.com","mailto:hello@arcodic.com"],["WhatsApp","https://wa.me/27676502266"],["Instagram","https://instagram.com/arcodic.studio"],["Book a call","https://wa.me/27676502266"]].map(([l,h]) => (
+            {[["hello@arcodic.com","mailto:hello@arcodic.com"],["WhatsApp","https://wa.me/27676502266"],["Instagram","https://instagram.com/arcodic.studio"]].map(([l,h]) => (
               <li key={l}><a href={h}>{l}</a></li>
             ))}
           </ul>
         </div>
       </footer>
       <div className="f-base">
-        <span className="f-copy">© 2025 ARCODIC. All rights reserved.</span>
-        <span className="f-copy">hello@arcodic.com</span>
+        <span className="f-copy">© {new Date().getFullYear()} ARCODIC. All rights reserved.</span>
       </div>
     </>
   );
