@@ -2,7 +2,7 @@
  * ARCODIC — Main Site
  * Stack: React 19 + Vite
  * Fonts: Cal Sans + Inter (both self-hosted, OFL-licensed)
- * Author: ARCODIC Studio
+ * Author: ARCODIC
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -999,7 +999,7 @@ export default function App() {
 
       <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero" data-theme="dark">
-        <p className="hero-kicker">Digital Studio — Est. 2025</p>
+        <p className="hero-kicker">Est. 2025</p>
         <div className="hero-wordmark">ARCODIC</div>
         <div className="hero-rule" />
         <div className="hero-foot">
@@ -1024,8 +1024,8 @@ export default function App() {
         </h2>
         <div className="statement-foot">
           <p className="statement-note r d1">
-            ARCODIC is a digital studio building high-performance websites
-            for brands that refuse to blend in. Next.js, TypeScript,
+            ARCODIC builds high-performance websites for brands that
+            refuse to blend in. Next.js, TypeScript,
             motion-first — delivered at speed.
           </p>
         </div>
@@ -1180,12 +1180,12 @@ export default function App() {
         <div>
           <div className="f-wordmark">ARCODIC</div>
           <p className="f-about">
-            Digital studio. Global reach.<br />
+            Global reach.<br />
             Built fast, built right.
           </p>
         </div>
         <div>
-          <div className="f-h">Studio</div>
+          <div className="f-h">Site</div>
           <ul className="f-links">
             {[["Work","#work"],["Process","#sprint"],["Pricing","#pricing"],["Statement","#statement"],["24H Landing Sprint","#sprint"]].map(([l,h]) => (
               <li key={l}><a href={h}>{l}</a></li>
