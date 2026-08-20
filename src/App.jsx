@@ -381,6 +381,10 @@ const CSS = `
     transition: color .3s ease, transform .55s var(--ease-spring);
   }
   .project-row:hover .project-arrow { color: var(--red); transform: translateX(5px); }
+  .project-result {
+    font-family: var(--ui); font-size: 11px; color: rgba(255,255,255,.35);
+    margin-top: 4px; letter-spacing: .04em;
+  }
 
   /* ─── SPRINT ────────────────────────────── */
   .sprint-section {
@@ -599,6 +603,13 @@ const CSS = `
     text-transform: uppercase;
   }
   .pricing-card.featured .pricing-meta { color: var(--dim-on-paper); }
+  .pricing-footnote {
+    font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.5);
+    margin-top: 32px; text-align: center;
+  }
+  .pricing-footnote a {
+    color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.3);
+  }
 
   @media (max-width: 768px) {
     .pricing-section { padding: 56px 24px; }
@@ -842,7 +853,10 @@ const CSS = `
   */
   @media (prefers-color-scheme: light) {
 
-    /* scrollbar — dark thumb on light track, red on hover */
+    /* ── page canvas: hero has no bg of its own, inherits this ── */
+    body { background: var(--paper); color: var(--ink); }
+
+    /* ── scrollbar — dark thumb on light track, red on hover ── */
     ::-webkit-scrollbar-thumb {
       background: rgba(16,16,16,.18);
     }
@@ -876,6 +890,34 @@ const CSS = `
     .ctx-sep { background: rgba(16,16,16,.1); }
     .ctx-foot { color: rgba(16,16,16,.35); }
 
+    /* ── hero: was always-dark, now matches the paper sections ── */
+    .hero::before { background: radial-gradient(circle, rgba(214,52,8,.28) 0%, transparent 70%); }
+    .hero-kicker { color: rgba(16,16,16,.55); }
+    .hero-wordmark { color: #101010; }
+    .hero-rule { background: var(--line); }
+    .hero-desc { color: var(--dim-on-paper); }
+    .hero-desc b { color: #101010; }
+    /* btn-white/btn-ghost are hero-only — a white pill on a now-light
+       hero would vanish, so they swap roles: solid-dark primary,
+       dark-tinted ghost, same pattern .btn-dark already uses on Sprint */
+    .btn-white       { background: #101010; color: var(--paper); }
+    .btn-white:hover { background: var(--red); color: #fff; }
+    .btn-ghost       { background: rgba(16,16,16,.06); color: rgba(16,16,16,.55); }
+    .btn-ghost:hover { background: rgba(16,16,16,.1); color: #101010; }
+
+    /* ── work (was always-dark) ── */
+    .work-section { background: var(--paper); color: var(--ink); }
+    .section-kicker { color: rgba(16,16,16,.5); }
+    .project-row, .project-row:last-child { border-color: var(--line); }
+    .project-tag { color: rgba(16,16,16,.5); }
+    .project-row:hover .project-tag { color: rgba(16,16,16,.35); }
+    .project-name { color: rgba(16,16,16,.85); }
+    .project-row:hover .project-name { color: #101010; }
+    .project-arrow { color: rgba(16,16,16,.45); }
+    .project-result { color: rgba(16,16,16,.4); }
+    /* project-thumb tiles keep their own brand-gradient colours —
+       self-contained, reads fine against either section tone */
+
     /* ── statement (paper section) ── */
     /* bg is already #F1EDE6 — just ensure text contrast.
        Scoped to .statement — .statement-h is also reused by
@@ -904,10 +946,72 @@ const CSS = `
       color: #fff;
     }
 
-    /* ── cta (paper section) ── */
-    /* cta-section is dark ink — stays dark, no change needed */
+    /* ── pricing (was always-dark) ──
+       Pricing's whole point is the featured card popping against its
+       neighbours — was a light card on a dark section. With the
+       section now light too, the contrast pair has to flip: featured
+       becomes the dark card, the other two become light-tinted. */
+    .pricing-section { background: var(--paper); color: var(--ink); border-bottom-color: var(--line); }
+    .pricing-grid { border-color: var(--line); }
+    .pricing-card {
+      background: rgba(16,16,16,.025);
+      border-color: var(--line);
+    }
+    .pricing-card:hover { background: rgba(16,16,16,.05); }
+    .pricing-card .pricing-tag    { color: var(--dim-on-paper); }
+    .pricing-card .pricing-name   { color: var(--ink); }
+    .pricing-card .pricing-price  { color: var(--ink); }
+    .pricing-card .pricing-price span { color: var(--dim-on-paper); }
+    .pricing-card .pricing-divider { background: var(--line); }
+    .pricing-card .pricing-desc   { color: var(--dim-on-paper); }
+    .pricing-card .pricing-meta   { color: var(--dim-on-paper); }
+    /* featured: inverted again on top of the above — dark card,
+       light text, so it's the one that pops now */
+    .pricing-card.featured {
+      background: #101010;
+      border-color: #101010;
+    }
+    .pricing-card.featured:hover { background: #1c1c1c; }
+    .pricing-card.featured .pricing-tag    { color: rgba(255,255,255,.55); }
+    .pricing-card.featured .pricing-name   { color: #fff; }
+    .pricing-card.featured .pricing-price  { color: #fff; }
+    .pricing-card.featured .pricing-price span { color: rgba(255,255,255,.55); }
+    .pricing-card.featured .pricing-divider { background: rgba(255,255,255,.1); }
+    .pricing-card.featured .pricing-desc   { color: rgba(255,255,255,.5); }
+    .pricing-card.featured .pricing-meta   { color: rgba(255,255,255,.55); }
+    .pricing-footnote { color: var(--dim-on-paper); }
+    .pricing-footnote a { color: #101010; border-bottom-color: rgba(16,16,16,.3); }
 
-    /* ── footer links (dark section) — no change needed ── */
+    /* ── cta / contact (was always-dark) ── */
+    .cta-section {
+      background:
+        linear-gradient(180deg, rgba(214,52,8,.05) 0%, transparent 22%),
+        var(--paper);
+    }
+    .cta-section::before { background: radial-gradient(ellipse, rgba(214,52,8,.12) 0%, transparent 70%); }
+    .cta-h { color: #101010; }
+    .cta-h em { color: var(--dim-on-paper); }
+    .cta-sub { color: var(--dim-on-paper); }
+    /* contact-card resting state — hover still swipes to solid red
+       with white text/icon, which stays correct on either bg, so
+       only the resting (pre-hover) colours need to flip here */
+    .contact-card { background: rgba(16,16,16,.03); border-color: var(--line); }
+    .contact-icon { color: rgba(16,16,16,.35); }
+    .contact-platform { color: rgba(16,16,16,.85); }
+    .contact-arrow { color: rgba(16,16,16,.35); }
+    @media (max-width: 768px) {
+      .contact-card:active { background: rgba(16,16,16,.06); }
+    }
+
+    /* ── footer (was always-dark) ── */
+    footer, .f-base { background: var(--paper); border-top-color: var(--line); }
+    .f-wordmark { color: rgba(16,16,16,.7); }
+    .f-about    { color: var(--dim-on-paper); }
+    .f-h        { color: rgba(16,16,16,.5); }
+    .f-links a  { color: rgba(16,16,16,.6); }
+    .f-links a::after { background: rgba(16,16,16,.5); }
+    .f-links a:hover { color: #101010; }
+    .f-copy     { color: var(--dim-on-paper); }
   }
 `;
 
@@ -1173,7 +1277,7 @@ export default function App() {
             <span className="project-tag">{d.tag}</span>
             <div className="project-body">
               <span className="project-name">{d.name}</span>
-              {d.result && <p style={{fontFamily:'var(--ui)',fontSize:'11px',color:'rgba(255,255,255,.35)',marginTop:'4px',letterSpacing:'.04em'}}>{d.result}</p>}
+              {d.result && <p className="project-result">{d.result}</p>}
             </div>
             <span className="project-arrow">→</span>
           </a>
@@ -1257,8 +1361,8 @@ export default function App() {
             </div>
           ))}
         </div>
-        <p className="r d2" style={{fontFamily:'var(--ui)',fontSize:'13px',color:'rgba(255,255,255,.5)',marginTop:'32px',textAlign:'center'}}>
-          Need something bigger? <a href="#contact" style={{color:'#fff',textDecoration:'none',borderBottom:'1px solid rgba(255,255,255,.3)'}}>Let's talk custom.</a>
+        <p className="pricing-footnote r d2">
+          Need something bigger? <a href="#contact">Let's talk custom.</a>
         </p>
       </section>
 
