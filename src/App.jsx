@@ -418,15 +418,26 @@ const CSS = `
   .project-preview {
     overflow: hidden;
     display: flex; align-items: flex-start; gap: 14px;
-    height: 220px; /* shared height — each panel's width comes from
-                       its own aspect-ratio, so all three line up
-                       cleanly along the bottom despite being very
-                       different shapes (two wide, one tall) */
   }
   .project-preview > * { margin-top: 22px; }
 
+  /*
+    Sizing: --preview-h is set from JS (measured off the row's real
+    rendered width, see the previewH effect) to whatever height makes
+    two 16:9 panels + one 9:20 panel exactly fill that width — same
+    "flex-grow equals its own aspect-ratio" math as before, just
+    computed directly instead of leaning on the browser to derive it.
+    Tried letting flexbox do it (flex-grow: <ratio>, flex-basis: 0)
+    and Chromium wasn't resolving the cross-size from aspect-ratio the
+    way spec suggests — panels came out ~8% taller than the width
+    actually justified, leaving the strip narrower than the row with
+    dead space on the right. Explicit height sidesteps that: aspect-
+    ratio deriving WIDTH from a definite height is the well-supported
+    direction. The 300px fallback only shows for one frame before the
+    effect measures and sets the real value.
+  */
   .preview-mock {
-    flex: none; height: 100%; width: auto;
+    flex: none; height: var(--preview-h, 300px); width: auto;
     aspect-ratio: 16 / 9;
     border-radius: 10px;
     overflow: hidden;
@@ -438,7 +449,11 @@ const CSS = `
   .project-row:hover .preview-mock { opacity: 1; transform: translateY(0); }
   .preview-mock:nth-child(2) { transition-delay: .05s; }
   .preview-mock:nth-child(3) { transition-delay: .1s; }
-  img.preview-mock { object-fit: cover; }
+  /* object-fit only — NOT width/height:100%, which (being img.preview-mock,
+     higher specificity than the plain .preview-mock class above) was
+     silently overriding the var(--preview-h)-driven sizing and forcing
+     the img to stretch to fill the row before aspect-ratio ever got a say */
+  img.preview-mock { display: block; object-fit: cover; }
   .preview-mock-mobile { aspect-ratio: 9 / 20; }
   .preview-chrome { display: flex; gap: 4px; padding: 8px 10px; background: rgba(0,0,0,.15); flex-shrink: 0; }
   .preview-chrome span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.4); }
@@ -1207,8 +1222,10 @@ export default function App() {
   const [progress,    setProgress]    = useState(0);
   const [ctxMenu,     setCtxMenu]     = useState({ visible: false, ready: false, x: 0, y: 0 });
   const [linkCopied,  setLinkCopied]  = useState(false);
+  const [previewH,    setPreviewH]    = useState(300);
   const hasBreathed = useRef(false);
   const ctxMenuRef = useRef(null);
+  const workSectionRef = useRef(null);
 
   // Dock: hidden over the hero, fades in once scrolled past it (and
   // back out if scrolled back to the top) — plus a one-time "breathe"
@@ -1266,6 +1283,27 @@ export default function App() {
     );
     document.querySelectorAll(".r").forEach(el => io.observe(el));
     return () => io.disconnect();
+  }, []);
+
+  // Work section preview strip: measures the row's real rendered
+  // width (via a project-row-top, which already spans the full
+  // content width) and computes the one shared height that makes two
+  // 16:9 panels + one 9:20 panel fill it exactly, edge to edge, at
+  // any viewport size. Re-measures on resize.
+  useEffect(() => {
+    const SUM_RATIO = (16 / 9) * 2 + 9 / 20;
+    const GAP = 14 * 2; // two 14px gaps between three panels
+    const measure = () => {
+      const rowTop = workSectionRef.current?.querySelector(".project-row-top");
+      if (!rowTop) return;
+      const w = rowTop.getBoundingClientRect().width - GAP;
+      if (w > 0) setPreviewH(w / SUM_RATIO);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (workSectionRef.current) ro.observe(workSectionRef.current);
+    window.addEventListener("resize", measure);
+    return () => { ro.disconnect(); window.removeEventListener("resize", measure); };
   }, []);
 
   // Custom right-click menu — replaces the browser default everywhere
@@ -1380,7 +1418,13 @@ export default function App() {
       </section>
 
       {/* ── WORK ─────────────────────────────── */}
-      <section className="work-section" id="work" data-theme="dark">
+      <section
+        className="work-section"
+        id="work"
+        data-theme="dark"
+        ref={workSectionRef}
+        style={{ "--preview-h": `${previewH}px` }}
+      >
         <p className="section-kicker r">Selected work</p>
         {DEMOS.map((d, i) => (
           <a
