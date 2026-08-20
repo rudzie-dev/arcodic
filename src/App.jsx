@@ -328,22 +328,35 @@ const CSS = `
   }
 
   /*
-    translateX on hover (not padding) = GPU composited,
-    zero layout shift, perfectly fluid spring feel.
+    Row is now a column: the original flex line (thumb/tag/name/arrow)
+    plus a second child that's collapsed to zero height until hover —
+    a 3-image "preview" strip that slides open underneath. Using a
+    grid-template-rows 0fr→1fr transition on the wrapper (not
+    max-height) since it animates to the content's real height
+    without needing to know it up front, and doesn't jank if the
+    content size ever changes.
   */
   .project-row {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 24px;
+    display: flex; flex-direction: column;
     padding: 30px 0;
     border-top: 1px solid rgba(255,255,255,.055);
     text-decoration: none; color: inherit;
+  }
+  .project-row:last-child { border-bottom: 1px solid rgba(255,255,255,.055); }
+  .project-row:active { opacity: .92; }
+
+  /* translateX on hover (not padding) = GPU composited, zero layout
+     shift, perfectly fluid spring feel — lives on the top line only,
+     independent of the preview strip's own reveal motion below it. */
+  .project-row-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
     transform: translateX(0);
     transition: transform .55s var(--ease-spring);
     will-change: transform;
   }
-  .project-row:last-child { border-bottom: 1px solid rgba(255,255,255,.055); }
-  .project-row:hover  { transform: translateX(10px); }
-  .project-row:active { transform: translateX(8px) scale(.99); }
+  .project-row:hover .project-row-top  { transform: translateX(10px); }
+  .project-row:active .project-row-top { transform: translateX(8px) scale(.99); }
 
   /* colour-coded tile standing in for a screenshot/thumbnail */
   .project-thumb {
@@ -384,6 +397,55 @@ const CSS = `
   .project-result {
     font-family: var(--ui); font-size: 11px; color: rgba(255,255,255,.35);
     margin-top: 4px; letter-spacing: .04em;
+  }
+
+  /* ── preview strip: hover-to-reveal, 3 panels per project ──
+     No real screenshots on file yet (see DEMOS) — these are clearly-
+     stylised abstract mockups (browser chrome + wireframe blocks)
+     tinted with the project's own brand gradient, not fake photos of
+     the real sites. Swap to actual screenshots later by replacing
+     <PreviewMock> with an <img>; the slide-open mechanism doesn't
+     need to change. */
+  .project-preview-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .5s var(--ease-out);
+  }
+  .project-row:hover .project-preview-wrap { grid-template-rows: 1fr; }
+  .project-preview {
+    overflow: hidden;
+    display: flex; gap: 14px;
+  }
+  .project-preview > * { margin-top: 22px; }
+
+  .preview-mock {
+    flex: 1; min-width: 0;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .4s ease, transform .4s var(--ease-out);
+  }
+  .project-row:hover .preview-mock { opacity: 1; transform: translateY(0); }
+  .preview-mock:nth-child(2) { transition-delay: .05s; }
+  .preview-mock:nth-child(3) { transition-delay: .1s; }
+  .preview-mock-mobile { flex: 0 0 108px; aspect-ratio: 9 / 16; }
+  .preview-chrome { display: flex; gap: 4px; padding: 8px 10px; background: rgba(0,0,0,.15); flex-shrink: 0; }
+  .preview-chrome span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.4); }
+  .preview-body { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .preview-block { background: rgba(255,255,255,.24); border-radius: 6px; }
+  .preview-block-hero { height: 42%; }
+  .preview-block-sm { height: 34%; }
+  .preview-line { height: 6px; border-radius: 3px; background: rgba(255,255,255,.32); flex-shrink: 0; }
+  .preview-pill { width: 42%; height: 14px; border-radius: 999px; background: rgba(255,255,255,.92); margin-top: auto; flex-shrink: 0; }
+  .preview-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .preview-grid span { background: rgba(255,255,255,.24); border-radius: 5px; }
+  .preview-mobile-frame { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+  @media (max-width: 768px) {
+    .project-preview-wrap { display: none; } /* hover doesn't apply on touch */
   }
 
   /* ─── SPRINT ────────────────────────────── */
@@ -773,8 +835,9 @@ const CSS = `
 
     /* work */
     .work-section { padding: 56px 24px; }
-    .project-row { flex-wrap: wrap; gap: 10px 8px; padding: 22px 0; }
-    .project-row:hover { transform: none; }
+    .project-row { padding: 22px 0; }
+    .project-row-top { flex-wrap: wrap; gap: 10px 8px; }
+    .project-row:hover .project-row-top { transform: none; }
     .project-row:active { opacity: .75; }
     .project-thumb { width: 40px; height: 40px; border-radius: 10px; font-size: 12px; }
     .project-tag { width: auto; flex: 1; }
@@ -1092,6 +1155,43 @@ const PlatformIcon = ({ platform }) => {
   );
 };
 
+// ─── PREVIEW MOCK ──────────────────────────────────────────────────
+// Stand-in for a real UI screenshot in the Work section's hover
+// reveal — no screenshots on file yet (see DEMOS), so this is a
+// deliberately-abstract wireframe (browser chrome + placeholder
+// blocks) tinted with the project's own gradient, not a fake photo
+// of the real site. Swap for an <img src="..."> per project later;
+// the slide-open mechanism in the CSS doesn't need to change.
+const PreviewMock = ({ variant, grad }) => (
+  <div
+    className={`preview-mock preview-mock-${variant}`}
+    style={{ background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})` }}
+    aria-hidden="true"
+  >
+    <div className="preview-chrome"><span /><span /><span /></div>
+    <div className="preview-body">
+      {variant === "hero" && (
+        <>
+          <div className="preview-block preview-block-hero" />
+          <div className="preview-line" style={{ width: "70%" }} />
+          <div className="preview-line" style={{ width: "45%" }} />
+          <div className="preview-pill" />
+        </>
+      )}
+      {variant === "grid" && (
+        <div className="preview-grid"><span /><span /><span /><span /></div>
+      )}
+      {variant === "mobile" && (
+        <div className="preview-mobile-frame">
+          <div className="preview-line" style={{ width: "80%" }} />
+          <div className="preview-block preview-block-sm" />
+          <div className="preview-line" style={{ width: "60%" }} />
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 // ─── COMPONENT ───────────────────────────────────────────────────
 export default function App() {
   const [dockVisible, setDockVisible] = useState(false);
@@ -1282,19 +1382,28 @@ export default function App() {
             rel="noopener noreferrer"
             className={`project-row r d${i + 1}`}
           >
-            <span
-              className="project-thumb"
-              style={{ background: `linear-gradient(135deg, ${d.grad[0]}, ${d.grad[1]})` }}
-              aria-hidden="true"
-            >
-              {d.mono}
-            </span>
-            <span className="project-tag">{d.tag}</span>
-            <div className="project-body">
-              <span className="project-name">{d.name}</span>
-              {d.result && <p className="project-result">{d.result}</p>}
+            <div className="project-row-top">
+              <span
+                className="project-thumb"
+                style={{ background: `linear-gradient(135deg, ${d.grad[0]}, ${d.grad[1]})` }}
+                aria-hidden="true"
+              >
+                {d.mono}
+              </span>
+              <span className="project-tag">{d.tag}</span>
+              <div className="project-body">
+                <span className="project-name">{d.name}</span>
+                {d.result && <p className="project-result">{d.result}</p>}
+              </div>
+              <span className="project-arrow">→</span>
             </div>
-            <span className="project-arrow">→</span>
+            <div className="project-preview-wrap">
+              <div className="project-preview">
+                <PreviewMock variant="hero"   grad={d.grad} />
+                <PreviewMock variant="grid"   grad={d.grad} />
+                <PreviewMock variant="mobile" grad={d.grad} />
+              </div>
+            </div>
           </a>
         ))}
       </section>
