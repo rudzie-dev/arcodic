@@ -656,7 +656,7 @@ const CSS = `
   .cta-h {
     font-family: var(--ui);
     font-size: clamp(50px, 8vw, 116px);
-    font-weight: 600; line-height: .95; letter-spacing: -.03em;
+    font-weight: 600; line-height: 1.04; letter-spacing: -.03em;
     color: #fff; margin-bottom: 32px; position: relative;
   }
   .cta-h em { font-style: normal; font-weight: 400; color: rgba(255,255,255,.35); }
@@ -818,6 +818,18 @@ const CSS = `
     footer { grid-template-columns: 1fr 1fr; padding: 48px 24px 0; gap: 28px 16px; }
     /* extra bottom padding so dock doesn't overlap footer */
     .f-base { padding: 20px 24px 100px; flex-direction: column; gap: 4px; }
+  }
+
+  /* ─── SMALL LANDSCAPE (phones rotated sideways) ──────────
+     .cta-h's font-size clamp scales off vw, which stays large even
+     when height is short — on a squat viewport that pushed the two
+     headline lines, sub-copy, and contact grid into a tight vertical
+     space with barely any breathing room. Cut the heading size and
+     section padding specifically for short+wide viewports. */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .cta-section { padding: 48px 24px 64px; }
+    .cta-h { font-size: clamp(34px, 7vw, 52px); margin-bottom: 20px; }
+    .cta-sub { margin-bottom: 28px; }
   }
 `;
 
