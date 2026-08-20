@@ -68,12 +68,12 @@ const CSS = `
   */
   @media (prefers-color-scheme: light) {
 
-    /* scrollbar — dark thumb on light track */
+    /* scrollbar — dark thumb on light track, red on hover */
     ::-webkit-scrollbar-thumb {
       background: rgba(16,16,16,.18);
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(16,16,16,.38);
+      background: var(--red);
     }
     * { scrollbar-color: rgba(16,16,16,.18) transparent; }
 
@@ -135,7 +135,19 @@ const CSS = `
     overflow-x: hidden;
   }
 
+  /* ─── SELECTION ─────────────────────────── */
+  /* brand red instead of the browser's default blue highlight */
+  ::selection   { background: var(--red); color: #fff; }
+  ::-moz-selection { background: var(--red); color: #fff; }
+
+  /* ─── FOCUS RING ────────────────────────── */
+  /* keyboard-nav outline in the brand accent instead of default blue —
+     still a real, visible outline (never suppressed) for accessibility */
+  :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
   /* ─── SCROLLBAR ─────────────────────────── */
+  /* neutral at rest, brand red on hover — same "quiet until you touch
+     it" pattern as the rest of the site's interactive elements */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-button { display: none; height: 0; }
@@ -144,9 +156,10 @@ const CSS = `
     border-radius: 999px;
     border: 1px solid transparent;
     background-clip: padding-box;
+    transition: background .2s ease;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(241,237,230,.32);
+    background: var(--red);
     background-clip: padding-box;
   }
   * { scrollbar-width: thin; scrollbar-color: rgba(241,237,230,.14) transparent; }
