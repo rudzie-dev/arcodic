@@ -868,12 +868,16 @@ const CSS = `
     .project-name { font-size: clamp(24px, 7vw, 34px); }
     .project-arrow { margin-left: auto; }
 
-    /* sprint: stack vertically, 24H number stays large */
+    /* sprint: stack vertically, 24H number stays large.
+       sprint-left itself also switches to a column — row +
+       space-between with no wrap wasn't just fitting the "24H"
+       numeral (up to 90px at this width) against the meta text on
+       one line, it was overflowing the viewport horizontally. */
     .sprint-section { grid-template-columns: 1fr; }
     .sprint-left {
       padding: 56px 24px 36px;
       border-right: none; border-bottom: 1px solid var(--line);
-      flex-direction: row; align-items: flex-end; justify-content: space-between;
+      flex-direction: column; align-items: flex-start; gap: 20px;
     }
     .sprint-num { font-size: clamp(80px, 24vw, 120px); }
     .sprint-right { padding: 36px 24px 56px; }
@@ -1390,8 +1394,10 @@ export default function App() {
         <div className="hero-rule" />
         <div className="hero-foot">
           <p className="hero-desc">
-            I build fast, motion-driven websites that make<br />
-            people stop scrolling and start clicking.<br />
+            I build fast, motion-driven websites that make{" "}
+            <br />
+            people stop scrolling and start clicking.{" "}
+            <br />
             <b>Live in 24 hours.</b> Brief to launch.
           </p>
           <div className="hero-btns">
