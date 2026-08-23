@@ -850,14 +850,28 @@ const CSS = `
     .hero-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .hero-btns .btn { width: 100%; text-align: center; margin-left: 0; padding: 16px; font-size: 15px; }
 
-    /* statement */
-    .statement { padding: 64px 24px; }
+    /* statement — full-screen "scene" like the hero, not a cramped
+       half-screen. Pricing and the footer are deliberately left off
+       this pattern below: pricing genuinely needs more room for its
+       3 stacked cards, and the footer is utility content, not a
+       scene — min-height only sets a floor, so anything that
+       actually needs to be taller still can be. */
+    .statement {
+      padding: 64px 24px;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
     .statement-h { font-size: clamp(30px, 8vw, 44px); }
     .statement-foot { margin-top: 28px; }
     .statement-note { text-align: left; max-width: 100%; }
 
-    /* work */
-    .work-section { padding: 56px 24px; }
+    /* work — same full-screen floor; grows past it naturally once
+       there are enough projects to need more room */
+    .work-section {
+      padding: 56px 24px;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
     .project-row { padding: 22px 0; }
     .project-row-top { flex-wrap: wrap; gap: 10px 8px; }
     .project-row:hover .project-row-top { transform: none; }
@@ -873,7 +887,7 @@ const CSS = `
        space-between with no wrap wasn't just fitting the "24H"
        numeral (up to 90px at this width) against the meta text on
        one line, it was overflowing the viewport horizontally. */
-    .sprint-section { grid-template-columns: 1fr; }
+    .sprint-section { grid-template-columns: 1fr; min-height: 100svh; align-content: center; }
     .sprint-left {
       padding: 56px 24px 36px;
       border-right: none; border-bottom: 1px solid var(--line);
@@ -893,8 +907,13 @@ const CSS = `
     .contact-card:hover { transform: none; }
     .contact-card:active { background: #1c1c1c; }
 
-    /* cta */
-    .cta-section { padding: 80px 24px 100px; }
+    /* cta — same floor; the 3 stacked contact pills push it past
+       100svh anyway on most phones, which is correct, not a bug */
+    .cta-section {
+      padding: 80px 24px 100px;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
     .cta-h { font-size: clamp(42px, 12vw, 68px); }
     .cta-sub { font-size: 14px; margin-bottom: 36px; max-width: 100%; }
 
