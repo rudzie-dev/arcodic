@@ -238,6 +238,34 @@ const CSS = `
   .dock-cta:hover  { background: var(--red); color: #fff; transform: translateY(-1px) scale(1.05); }
   .dock-cta:active { transform: scale(.94); }
 
+  /* ── mobile burger + menu ──
+     Desktop shows the full dock-a link row; mobile hides those and
+     shows this instead. Hidden here unconditionally — the mobile
+     media query further down turns both on for narrow viewports
+     only, same pattern .dock-a/.dock-sep already use in reverse. */
+  .dock-burger {
+    display: none;
+    width: 34px; height: 34px; flex-shrink: 0;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 5px;
+    background: none; border: none; padding: 0; cursor: pointer;
+  }
+  .dock-burger span {
+    width: 16px; height: 1.5px; border-radius: 2px;
+    background: rgba(255,255,255,.75);
+    transition: transform .35s var(--ease-spring), opacity .2s ease;
+  }
+  /* morphs into an X — middle bar fades, outer two rotate to meet
+     at the center (6.5px = half the 5px gap + half the 1.5px bar,
+     the distance from each bar's own center to the row's center) */
+  .dock-burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .dock-burger.open span:nth-child(2) { opacity: 0; }
+  .dock-burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .dock-mobile-menu {
+    display: none; /* mobile media query turns this into flex */
+  }
+
   /* Deliberately placed after every rule it overrides (same reason
      as the site-wide light-mode block): equal-specificity same-class
      rules resolve by source order regardless of the media query, so
@@ -913,9 +941,40 @@ const CSS = `
     ::-webkit-scrollbar { display: none; }
     * { scrollbar-width: none; }
 
-    /* dock: hide nav links, pill shrinks to logo + cta only */
-    .dock { width: 224px; } /* same +14px padding fix as desktop */
+    /* dock: hide the inline nav links, pill shrinks to logo + burger
+       + cta, and the burger opens a glass card above the pill with
+       those same links instead of leaving them unreachable */
+    .dock { width: 264px; } /* 224px logo+cta base, +40px for the burger */
     .dock-a, .dock-sep { display: none; }
+    .dock-burger { display: flex; }
+
+    .dock-shell { position: fixed; } /* menu below positions off this */
+    .dock-mobile-menu {
+      display: flex; flex-direction: column;
+      position: absolute; bottom: calc(100% + 12px); left: 50%;
+      width: 190px; padding: 8px;
+      border-radius: 20px;
+      background: rgba(16,16,16,.82);
+      backdrop-filter: blur(28px) saturate(1.8);
+      -webkit-backdrop-filter: blur(28px) saturate(1.8);
+      border: 1px solid rgba(255,255,255,.11);
+      box-shadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+      opacity: 0; pointer-events: none;
+      transform: translateX(-50%) translateY(8px) scale(.94);
+      transform-origin: bottom center;
+      transition: opacity .25s ease, transform .35s var(--ease-spring);
+    }
+    .dock-mobile-menu.open {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+    .dock-mobile-a {
+      font-family: var(--ui); font-size: 15px; font-weight: 500;
+      color: rgba(255,255,255,.75); text-decoration: none;
+      padding: 13px 16px; border-radius: 13px;
+      transition: background .15s ease, color .15s ease;
+    }
+    .dock-mobile-a:hover, .dock-mobile-a:active { background: rgba(214,52,8,.16); color: #fff; }
 
     /* hero */
     .hero { padding: 0 24px 96px; }
@@ -999,6 +1058,18 @@ const CSS = `
     .f-base { padding: 20px 24px 100px; flex-direction: column; gap: 4px; }
   }
 
+  /* Separate reduced-motion block for the burger/mobile-menu rather
+     than folding into the one after .dock-cta:active — those rules
+     live inside the max-width:768px query above, later in the
+     stylesheet than that one, so an earlier override would lose to
+     them by source order on a narrow + reduced-motion browser (the
+     exact bug the other block's own comment describes). Has to come
+     after the query it's overriding, same rule, different spot. */
+  @media (prefers-reduced-motion: reduce) {
+    .dock-burger span { transition: none; }
+    .dock-mobile-menu { transition: none; }
+  }
+
   /* ─── SMALL LANDSCAPE (phones rotated sideways) ──────────
      .cta-h's font-size clamp scales off vw, which stays large even
      when height is short — on a squat viewport that pushed the two
@@ -1076,6 +1147,15 @@ const CSS = `
     .dock::after { background: linear-gradient(115deg, transparent 35%, rgba(16,16,16,.06) 48%, transparent 62%); }
     .dock-glow { background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(16,16,16,.1), transparent 68%); }
     .dock-ripple { background: radial-gradient(circle, rgba(16,16,16,.18) 0%, rgba(16,16,16,.05) 45%, transparent 72%); }
+    /* mobile burger + menu: dark lines/text on the light glass pill */
+    .dock-burger span { background: rgba(16,16,16,.7); }
+    .dock-mobile-menu {
+      background: rgba(241,237,230,.92);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .dock-mobile-a { color: rgba(16,16,16,.65); }
+    .dock-mobile-a:hover, .dock-mobile-a:active { background: rgba(214,52,8,.12); color: #101010; }
 
     /* ── context menu: light glass card ── */
     .ctx-menu {
@@ -1330,6 +1410,7 @@ export default function App() {
   const [linkCopied,  setLinkCopied]  = useState(false);
   const [previewH,    setPreviewH]    = useState(300);
   const [dockRipple,  setDockRipple]  = useState(null); // {x, y, key}
+  const [menuOpen,    setMenuOpen]    = useState(false); // mobile burger menu
   const hasBreathed = useRef(false);
   const ctxMenuRef = useRef(null);
   const workSectionRef = useRef(null);
@@ -1494,6 +1575,31 @@ export default function App() {
     setDockRipple({ x: e.clientX - r.left, y: e.clientY - r.top, key: Date.now() });
   };
 
+  // Mobile burger menu — closes on Escape, an outside click, or any
+  // scroll (standard mobile-nav behaviour), and force-closes if the
+  // dock itself hides (scrolled back over the hero, or near the very
+  // bottom) so it never ends up floating with no dock beneath it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = () => setMenuOpen(false);
+    const onKeyDown = (e) => { if (e.key === "Escape") close(); };
+    const onClick = (e) => {
+      if (dockRef.current && !dockRef.current.parentElement.contains(e.target)) close();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onClick);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onClick);
+      window.removeEventListener("scroll", close);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!dockVisible) setMenuOpen(false);
+  }, [dockVisible]);
+
   return (
     <>
       <style>{CSS}</style>
@@ -1525,9 +1631,24 @@ export default function App() {
             <a href="#sprint"  className="dock-a">24H</a>
             <a href="#pricing" className="dock-a">Pricing</a>
             <a href="#contact" className="dock-a">Contact</a>
+            <button
+              type="button"
+              className={`dock-burger${menuOpen ? " open" : ""}`}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(o => !o)}
+            >
+              <span /><span /><span />
+            </button>
             <a href="#contact" className="dock-cta">Let&#39;s build</a>
           </div>
         </nav>
+        <div className={`dock-mobile-menu${menuOpen ? " open" : ""}`}>
+          <a href="#work"    className="dock-mobile-a" onClick={() => setMenuOpen(false)}>Work</a>
+          <a href="#sprint"  className="dock-mobile-a" onClick={() => setMenuOpen(false)}>24H</a>
+          <a href="#pricing" className="dock-mobile-a" onClick={() => setMenuOpen(false)}>Pricing</a>
+          <a href="#contact" className="dock-mobile-a" onClick={() => setMenuOpen(false)}>Contact</a>
+        </div>
       </div>
 
       <main>{/* ── HERO ─────────────────────────────── */}
