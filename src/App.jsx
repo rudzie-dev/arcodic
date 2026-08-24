@@ -1423,6 +1423,7 @@ export default function App() {
   // section is currently behind the top of the viewport.
   useEffect(() => {
     const hero = document.querySelector(".hero");
+    const footerEnd = document.querySelector(".f-base");
     const sections = [...document.querySelectorAll("[data-theme]")];
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     const THEME_COLOR = { dark: "#101010", light: "#F1EDE6" };
@@ -1434,9 +1435,30 @@ export default function App() {
 
       const threshold = hero ? hero.offsetHeight * 0.7 : window.innerHeight * 0.7;
       const past = scrollTop > threshold;
-      // also hide near the very bottom — fixed-position dock otherwise
-      // sits on top of the footer's last lines with nothing to yield to
-      const nearBottom = scrollHeight - (scrollTop + clientHeight) < 160;
+      // Hide once .f-base (the copyright bar, not the whole <footer>)
+      // is about to enter view. Tried keying this off <footer>'s own
+      // top first: on an ordinary desktop viewport, the CTA section
+      // is short enough that its footer already sits mostly in view
+      // the moment you scroll to the CTA section's top — so the dock
+      // (including the "Let's build" link that got someone there)
+      // vanished right as they arrived, taking the whole footer's nav
+      // grid down with it. Keying off .f-base instead keeps the dock
+      // available through the CTA section and the footer's nav links,
+      // only stepping aside at the true bottom of the page.
+      //
+      // The threshold itself: the dock's own bottom edge sits at
+      // innerHeight - 28 (its `bottom: 28px` CSS). Getting this wrong
+      // the first time (used a flat 90px, meant to approximate dock
+      // height + offset but applied from the wrong edge) left the
+      // dock reporting "visible" while it was already visually
+      // sitting on top of .f-base's text — caught by screenshotting
+      // the true-bottom state, not just checking the boolean. 20px
+      // buffer past that edge so the .5s fade has room to finish
+      // before .f-base would actually reach the dock.
+      const DOCK_BOTTOM_OFFSET = 28;
+      const nearBottom = footerEnd
+        ? footerEnd.getBoundingClientRect().top < window.innerHeight - DOCK_BOTTOM_OFFSET - 20
+        : false;
       setDockVisible(past && !nearBottom);
       if (past && !hasBreathed.current) {
         hasBreathed.current = true;
