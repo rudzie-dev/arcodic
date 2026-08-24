@@ -129,6 +129,23 @@ const CSS = `
     transform: translateX(-50%) translateY(0);
   }
 
+  /*
+    ─── LIQUID GLASS ─────────────────────────
+    The dock's material: blur+saturate already gives it a frosted-
+    glass base. Layered on top —
+    1. .dock::after — a slow diagonal sheen drifting across the
+       surface on a loop, like light shifting on a curved pane.
+       Always on, very low opacity — ambient, not attention-seeking.
+    2. .dock-glow — a brighter highlight that tracks the cursor
+       (position written to --gx/--gy in JS on pointermove), as if
+       the "glass" is catching a light source at your fingertip.
+       Only visible on hover.
+    3. .dock-ripple — a liquid bloom from the actual click point on
+       press, mirroring how a real fluid surface responds to touch.
+    Transitions/scale throughout use var(--ease-spring) for the
+    elastic, slightly overshooting feel liquid glass is defined by,
+    rather than a flat ease-out.
+  */
   .dock {
     height: 52px; width: 482px;
     border-radius: 999px;
@@ -139,9 +156,42 @@ const CSS = `
     box-shadow: 0 4px 32px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.07);
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
+    position: relative;
+    transition: transform .4s var(--ease-spring), backdrop-filter .3s ease, box-shadow .3s ease;
+  }
+  .dock:hover {
+    transform: scale(1.012);
+    backdrop-filter: blur(34px) saturate(2.05);
+    -webkit-backdrop-filter: blur(34px) saturate(2.05);
+    box-shadow: 0 6px 36px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.1);
   }
   .dock.breathe { animation: dockBreathe .6s var(--ease-spring) forwards; }
 
+  .dock::after {
+    content: ''; position: absolute; inset: -20%;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.14) 48%, transparent 62%);
+    background-size: 260% 260%;
+    animation: dockSheen 9s ease-in-out infinite;
+    pointer-events: none;
+    /* plain alpha, not a blend mode — overlay/screen barely move a
+       base this close to black (tried overlay first: nearly
+       invisible), and a blend mode would need a separate light-mode
+       formula anyway since the dock's bg flips light/dark. Plain
+       white-over-dark is predictable in both. */
+  }
+  .dock-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.4), transparent 68%);
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .dock:hover .dock-glow { opacity: 1; }
+  .dock-ripple {
+    position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px;
+    border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,.12) 45%, transparent 72%);
+    animation: dockRipple .65s var(--ease-out) forwards;
+  }
   .dock-row {
     display: flex; align-items: center;
     padding: 0 7px;
@@ -162,7 +212,8 @@ const CSS = `
     color: rgba(255,255,255,.48); text-decoration: none;
     padding: 0 14px; line-height: 52px;
     position: relative;
-    transition: color .22s ease;
+    display: inline-block; /* transform-origin needs a box, not an inline run */
+    transition: color .22s ease, transform .35s var(--ease-spring);
   }
   /* slide-in underline on hover */
   .dock-a::after {
@@ -172,7 +223,9 @@ const CSS = `
     transform: scaleX(0); transform-origin: left;
     transition: transform .28s var(--ease-out);
   }
-  .dock-a:hover { color: #fff; }
+  /* liquid magnify — a soft elastic bulge, not a static hover state */
+  .dock-a:hover { color: #fff; transform: scale(1.08); }
+  .dock-a:active { transform: scale(.96); }
   .dock-a:hover::after { transform: scaleX(1); }
 
   .dock-cta {
@@ -180,10 +233,25 @@ const CSS = `
     color: var(--ink); background: #fff;
     border-radius: 999px; padding: 9px 20px;
     text-decoration: none; margin-left: 6px; flex-shrink: 0;
-    transition: background .22s ease, color .22s ease, transform .15s ease;
+    transition: background .22s ease, color .22s ease, transform .35s var(--ease-spring);
   }
-  .dock-cta:hover  { background: var(--red); color: #fff; transform: translateY(-1px); }
-  .dock-cta:active { transform: scale(.96); }
+  .dock-cta:hover  { background: var(--red); color: #fff; transform: translateY(-1px) scale(1.05); }
+  .dock-cta:active { transform: scale(.94); }
+
+  /* Deliberately placed after every rule it overrides (same reason
+     as the site-wide light-mode block): equal-specificity same-class
+     rules resolve by source order regardless of the media query, so
+     this has to come last to actually win. Had it living right after
+     .dock-ripple earlier and .dock-a/.dock-cta's OWN later transform
+     transitions were silently overriding it — the elastic hover
+     scale kept animating under reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .dock::after { animation: none; }
+    .dock, .dock:hover { transition: none; transform: none; }
+    .dock-ripple { animation: none; display: none; }
+    .dock-a, .dock-a:hover, .dock-a:active,
+    .dock-cta, .dock-cta:hover, .dock-cta:active { transition: none; transform: none; }
+  }
 
   /* ─── CONTEXT MENU ──────────────────────── */
   /* replaces the browser's default right-click menu with a glass
@@ -823,6 +891,14 @@ const CSS = `
   @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
   @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
   @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
+  @keyframes dockSheen {
+    0%, 100% { background-position: 220% 220%; }
+    50%      { background-position: -60% -60%; }
+  }
+  @keyframes dockRipple {
+    from { transform: scale(1);  opacity: 1; }
+    to   { transform: scale(20); opacity: 0; }
+  }
   @keyframes heroGlowDrift {
     0%   { transform: translate(0, 0) scale(1); }
     33%  { transform: translate(-12%, 10%) scale(1.12); }
@@ -993,6 +1069,13 @@ const CSS = `
     .dock-a::after { background: rgba(16,16,16,.6); }
     .dock-cta  { background: #101010; color: #F1EDE6; }
     .dock-cta:hover { background: var(--red); color: #fff; }
+    /* liquid glass highlights flip to a dark tint here — white-on-
+       white barely reads, same reason the dark dock's version isn't
+       a blend mode: needs its own formula per background, not a
+       blend trick that quietly breaks on the other theme */
+    .dock::after { background: linear-gradient(115deg, transparent 35%, rgba(16,16,16,.06) 48%, transparent 62%); }
+    .dock-glow { background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(16,16,16,.1), transparent 68%); }
+    .dock-ripple { background: radial-gradient(circle, rgba(16,16,16,.18) 0%, rgba(16,16,16,.05) 45%, transparent 72%); }
 
     /* ── context menu: light glass card ── */
     .ctx-menu {
@@ -1246,9 +1329,11 @@ export default function App() {
   const [ctxMenu,     setCtxMenu]     = useState({ visible: false, ready: false, x: 0, y: 0 });
   const [linkCopied,  setLinkCopied]  = useState(false);
   const [previewH,    setPreviewH]    = useState(300);
+  const [dockRipple,  setDockRipple]  = useState(null); // {x, y, key}
   const hasBreathed = useRef(false);
   const ctxMenuRef = useRef(null);
   const workSectionRef = useRef(null);
+  const dockRef = useRef(null);
 
   // Dock: hidden over the hero, fades in once scrolled past it (and
   // back out if scrolled back to the top) — plus a one-time "breathe"
@@ -1384,6 +1469,31 @@ export default function App() {
     }
   };
 
+  // Liquid glass: a specular highlight that tracks the cursor across
+  // the dock's surface, like light catching a curved sheet of glass.
+  // Written straight to the DOM (CSS custom properties) instead of
+  // React state — this fires on every pointer move, and re-rendering
+  // for that would be wasteful; the highlight itself is pure CSS
+  // (a radial-gradient reading those custom properties).
+  const dockPointerMove = (e) => {
+    const el = dockRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--gx", `${((e.clientX - r.left) / r.width) * 100}%`);
+    el.style.setProperty("--gy", `${((e.clientY - r.top) / r.height) * 100}%`);
+  };
+
+  // Liquid ripple on press, from the actual click point — one at a
+  // time is plenty for a dock this size; the CSS animation cleans
+  // itself up via onAnimationEnd.
+  const dockPointerDown = (e) => {
+    const el = dockRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const r = el.getBoundingClientRect();
+    setDockRipple({ x: e.clientX - r.left, y: e.clientY - r.top, key: Date.now() });
+  };
+
   return (
     <>
       <style>{CSS}</style>
@@ -1393,7 +1503,21 @@ export default function App() {
 
       {/* ── DOCK ─────────────────────────────── */}
       <div className={`dock-shell${dockVisible ? " visible" : ""}`}>
-        <nav className={`dock${breathe ? " breathe" : ""}`}>
+        <nav
+          className={`dock${breathe ? " breathe" : ""}`}
+          ref={dockRef}
+          onMouseMove={dockPointerMove}
+          onMouseDown={dockPointerDown}
+        >
+          <div className="dock-glow" aria-hidden="true" />
+          {dockRipple && (
+            <span
+              key={dockRipple.key}
+              className="dock-ripple"
+              style={{ left: dockRipple.x, top: dockRipple.y }}
+              onAnimationEnd={() => setDockRipple(null)}
+            />
+          )}
           <div className="dock-row">
             <span className="dock-logo">ARCODIC</span>
             <div className="dock-sep" />
