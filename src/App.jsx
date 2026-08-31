@@ -1801,7 +1801,7 @@ export default function App() {
 
       {/* ── PRICING ─────────────────────────── */}
       <section className="pricing-section" id="pricing" data-theme="dark">
-        <h2 className="section-kicker r">What it costs</h2>>
+        <h2 className="section-kicker r">What it costs</h2>
         <h2 className="statement-h r">
           <span className="mask-line"><span>Transparent.</span></span>
           <span className="mask-line"><span><em>No surprises.</em></span></span>
