@@ -1704,7 +1704,7 @@ export default function App() {
           <p className="statement-note r d1">
             ARCODIC builds high-performance websites for brands that
             refuse to blend in. Next.js, TypeScript,
-            motion-first — delivered at speed.
+            motion-first. Delivered at speed.
           </p>
         </div>
       </section>
@@ -1784,9 +1784,9 @@ export default function App() {
           </h2>
           <p className="sprint-body r d1">
             For landing pages, I&#39;ve built the systems, the stack, and
-            the process to move at a speed most studios can&#39;t match —
+            the process to move at a speed most studios can&#39;t match,
             without cutting corners on quality. Bigger multi-page builds
-            take longer — see pricing below for exact turnaround.
+            take longer. See pricing below for exact turnaround.
           </p>
           <a
             href="#contact"
@@ -1810,7 +1810,7 @@ export default function App() {
           {[
             {
               tag: "Entry", name: "Landing Page", price: "R1,500", priceEnd: "– R2,500",
-              desc: "One page. One goal. Built around a single conversion — a call, a WhatsApp, a booking.",
+              desc: "One page. One goal. Built around a single conversion: a call, a WhatsApp, a booking.",
               meta: "24-hour turnaround", featured: false,
             },
             {
@@ -1820,7 +1820,7 @@ export default function App() {
             },
             {
               tag: "Full Build", name: "Business Site", price: "R6,000", priceEnd: "– R10,000",
-              desc: "Built for growth. Bookings, galleries, animations, analytics — a real competitive advantage.",
+              desc: "Built for growth. Bookings, galleries, animations, analytics: a real competitive advantage.",
               meta: "1–2 week turnaround", featured: false,
             },
           ].map((p, i) => (
