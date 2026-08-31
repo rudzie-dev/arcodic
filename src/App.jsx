@@ -1676,7 +1676,7 @@ export default function App() {
       <main>{/* ── HERO ─────────────────────────────── */}
       <section className="hero" data-theme="dark">
         <p className="hero-kicker">Est. 2025</p>
-       <h1 className="hero-wordmark">ARCODIC</h1>
+        <h1 className="hero-wordmark">ARCODIC</h1>
         <div className="hero-rule" />
         <div className="hero-foot">
           <p className="hero-desc">
