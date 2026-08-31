@@ -881,6 +881,14 @@ const CSS = `
     display: flex; justify-content: space-between;
   }
   .f-copy { font-family: var(--ui); font-size: 12px; color: rgba(255,255,255,.5); }
+  .f-legal { display: flex; gap: 20px; }
+  .f-legal a {
+    font-family: var(--ui); font-size: 12px;
+    color: rgba(255,255,255,.5);
+    text-decoration: none;
+    transition: color .2s ease;
+  }
+  .f-legal a:hover { color: #fff; }
 
   /* ─── SCROLL REVEAL ─────────────────────── */
   .r {
@@ -1299,6 +1307,8 @@ const CSS = `
     .f-links a::after { background: rgba(16,16,16,.5); }
     .f-links a:hover { color: #101010; }
     .f-copy     { color: var(--dim-on-paper); }
+    .f-legal a  { color: var(--dim-on-paper); }
+    .f-legal a:hover { color: #101010; }
   }
 `;
 
@@ -1914,6 +1924,10 @@ export default function App() {
       </footer>
       <div className="f-base">
         <span className="f-copy">© {new Date().getFullYear()} ARCODIC. All rights reserved.</span>
+        <div className="f-legal">
+          <a href="/privacy.html">Privacy Policy</a>
+          <a href="/terms.html">Terms of Service</a>
+        </div>
       </div>
 
       {/* ── CONTEXT MENU ─────────────────────── */}
