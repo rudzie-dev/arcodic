@@ -1,0 +1,1320 @@
+  /* Fonts loaded via <link> in index.html — preloaded in parallel */
+  @font-face {
+    font-family: 'Cal Sans';
+    src: url('/fonts/cal-sans.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* show fallback immediately on slow nets, swap in when ready */
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('/fonts/inter-var.woff2') format('woff2-variations');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* ─── RESET ─────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ─── TOKENS ─────────────────────────────── */
+  /*
+    Dark base by default — site is primarily dark.
+    Light mode inverts surface colours only.
+    Accent red stays consistent across both modes.
+  */
+  :root {
+    --ink:    #101010;
+    --paper:  #F1EDE6;
+    --dim:    #878075;
+    --dim-on-paper: #6B6460; /* --dim only hits 3.35:1 on --paper — fails AA (4.5:1) for
+                                 normal-size body text. Use this on paper-bg sections instead;
+                                 it's the same colour the light-mode override already proved
+                                 works (4.97:1), just applied unconditionally. */
+    --line:   rgba(16,16,16,.07);
+    --red:    #D63408;
+    --red-ink: #B82C06; /* --red only hits 4.13:1 on --paper — fails AA (4.5:1) for
+                            normal-size text. Use this for small red text on paper;
+                            large text (headings, the sprint numeral) is fine with --red. */
+    --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --logo:   'Cal Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --ease-spring: cubic-bezier(.34,1.2,.64,1);
+    --ease-out:    cubic-bezier(.22,1,.36,1);
+
+    /* dark mode scrollbar tint (default) */
+    --scrollbar-thumb: rgba(241,237,230,.14);
+    --scrollbar-thumb-hover: rgba(241,237,230,.32);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--ui);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── SELECTION ─────────────────────────── */
+  /* brand red instead of the browser's default blue highlight */
+  ::selection   { background: var(--red); color: #fff; }
+  ::-moz-selection { background: var(--red); color: #fff; }
+
+  /* ─── FOCUS RING ────────────────────────── */
+  /* keyboard-nav outline in the brand accent instead of default blue —
+     still a real, visible outline (never suppressed) for accessibility */
+  :focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+
+  /* ─── SCROLLBAR ─────────────────────────── */
+  /* neutral at rest, brand red on hover — same "quiet until you touch
+     it" pattern as the rest of the site's interactive elements */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-button { display: none; height: 0; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(241,237,230,.14);
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    transition: background .2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--red);
+    background-clip: padding-box;
+  }
+  * { scrollbar-width: thin; scrollbar-color: rgba(241,237,230,.14) transparent; }
+
+  /* ─── SCROLL PROGRESS BAR ───────────────── */
+  .progress {
+    position: fixed; top: 0; left: 0;
+    height: 2px;
+    background: var(--red);
+    z-index: 500;
+    transition: width .08s linear;
+    will-change: width;
+  }
+
+  /* ─── DOCK ──────────────────────────────── */
+  /*
+    Hidden while the hero is on screen — the hero already has its own
+    CTAs, and popping this up on load just sits on top of the wordmark.
+    Fades/slides in once the hero has been scrolled past (state driven
+    from JS scroll position), and hides again if scrolled back to top.
+    Always a fully-formed pill — no circle/spinner load-in morph, since
+    that read as a "connecting" cue and doesn't make sense fired mid-scroll.
+  */
+  .dock-shell {
+    position: fixed;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    z-index: 400;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+  }
+  .dock-shell.visible {
+    opacity: 1; pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /*
+    ─── LIQUID GLASS ─────────────────────────
+    The dock's material: blur+saturate already gives it a frosted-
+    glass base. Layered on top —
+    1. .dock::after — a slow diagonal sheen drifting across the
+       surface on a loop, like light shifting on a curved pane.
+       Always on, very low opacity — ambient, not attention-seeking.
+    2. .dock-glow — a brighter highlight that tracks the cursor
+       (position written to --gx/--gy in JS on pointermove), as if
+       the "glass" is catching a light source at your fingertip.
+       Only visible on hover.
+    3. .dock-ripple — a liquid bloom from the actual click point on
+       press, mirroring how a real fluid surface responds to touch.
+    Transitions/scale throughout use var(--ease-spring) for the
+    elastic, slightly overshooting feel liquid glass is defined by,
+    rather than a flat ease-out.
+  */
+  .dock {
+    height: 52px; width: 482px;
+    border-radius: 999px;
+    background: rgba(16,16,16,.68);
+    backdrop-filter: blur(32px) saturate(1.9);
+    -webkit-backdrop-filter: blur(32px) saturate(1.9);
+    border: 1px solid rgba(255,255,255,.11);
+    box-shadow: 0 4px 32px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.07);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+    transition: transform .4s var(--ease-spring), backdrop-filter .3s ease, box-shadow .3s ease;
+  }
+  .dock:hover {
+    transform: scale(1.012);
+    backdrop-filter: blur(34px) saturate(2.05);
+    -webkit-backdrop-filter: blur(34px) saturate(2.05);
+    box-shadow: 0 6px 36px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  .dock.breathe { animation: dockBreathe .6s var(--ease-spring) forwards; }
+
+  .dock::after {
+    content: ''; position: absolute; inset: -20%;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.14) 48%, transparent 62%);
+    background-size: 260% 260%;
+    animation: dockSheen 9s ease-in-out infinite;
+    pointer-events: none;
+    /* plain alpha, not a blend mode — overlay/screen barely move a
+       base this close to black (tried overlay first: nearly
+       invisible), and a blend mode would need a separate light-mode
+       formula anyway since the dock's bg flips light/dark. Plain
+       white-over-dark is predictable in both. */
+  }
+  .dock-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.4), transparent 68%);
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .dock:hover .dock-glow { opacity: 1; }
+  .dock-ripple {
+    position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px;
+    border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,.12) 45%, transparent 72%);
+    animation: dockRipple .65s var(--ease-out) forwards;
+  }
+  .dock-row {
+    display: flex; align-items: center;
+    padding: 0 7px;
+    white-space: nowrap;
+  }
+
+  .dock-logo {
+    font-family: var(--logo);
+    font-size: 16px; color: #fff;
+    padding: 0 14px 0 10px;
+    line-height: 1;
+  }
+
+  .dock-sep { width: 1px; height: 18px; background: rgba(255,255,255,.1); flex-shrink: 0; }
+
+  .dock-a {
+    font-family: var(--ui); font-size: 13px; font-weight: 500;
+    color: rgba(255,255,255,.48); text-decoration: none;
+    padding: 0 14px; line-height: 52px;
+    position: relative;
+    display: inline-block; /* transform-origin needs a box, not an inline run */
+    transition: color .22s ease, transform .35s var(--ease-spring);
+  }
+  /* slide-in underline on hover */
+  .dock-a::after {
+    content: ''; position: absolute;
+    bottom: 10px; left: 14px; right: 14px;
+    height: 1px; background: rgba(255,255,255,.5);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .28s var(--ease-out);
+  }
+  /* liquid magnify — a soft elastic bulge, not a static hover state */
+  .dock-a:hover { color: #fff; transform: scale(1.08); }
+  .dock-a:active { transform: scale(.96); }
+  .dock-a:hover::after { transform: scaleX(1); }
+
+  .dock-cta {
+    font-family: var(--ui); font-size: 13px; font-weight: 600;
+    color: var(--ink); background: #fff;
+    border-radius: 999px; padding: 9px 20px;
+    text-decoration: none; margin-left: 6px; flex-shrink: 0;
+    transition: background .22s ease, color .22s ease, transform .35s var(--ease-spring);
+  }
+  .dock-cta:hover  { background: var(--red); color: #fff; transform: translateY(-1px) scale(1.05); }
+  .dock-cta:active { transform: scale(.94); }
+
+  /* ── mobile burger + menu ──
+     Desktop shows the full dock-a link row; mobile hides those and
+     shows this instead. Hidden here unconditionally — the mobile
+     media query further down turns both on for narrow viewports
+     only, same pattern .dock-a/.dock-sep already use in reverse. */
+  .dock-burger {
+    display: none;
+    width: 34px; height: 34px; flex-shrink: 0;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 5px;
+    background: none; border: none; padding: 0; cursor: pointer;
+  }
+  .dock-burger span {
+    width: 16px; height: 1.5px; border-radius: 2px;
+    background: rgba(255,255,255,.75);
+    transition: transform .35s var(--ease-spring), opacity .2s ease;
+  }
+  /* morphs into an X — middle bar fades, outer two rotate to meet
+     at the center (6.5px = half the 5px gap + half the 1.5px bar,
+     the distance from each bar's own center to the row's center) */
+  .dock-burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .dock-burger.open span:nth-child(2) { opacity: 0; }
+  .dock-burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .dock-mobile-menu {
+    display: none; /* mobile media query turns this into flex */
+  }
+
+  /* Deliberately placed after every rule it overrides (same reason
+     as the site-wide light-mode block): equal-specificity same-class
+     rules resolve by source order regardless of the media query, so
+     this has to come last to actually win. Had it living right after
+     .dock-ripple earlier and .dock-a/.dock-cta's OWN later transform
+     transitions were silently overriding it — the elastic hover
+     scale kept animating under reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .dock::after { animation: none; }
+    .dock, .dock:hover { transition: none; transform: none; }
+    .dock-ripple { animation: none; display: none; }
+    .dock-a, .dock-a:hover, .dock-a:active,
+    .dock-cta, .dock-cta:hover, .dock-cta:active { transition: none; transform: none; }
+  }
+
+  /* ─── CONTEXT MENU ──────────────────────── */
+  /* replaces the browser's default right-click menu with a glass
+     card in the dock's own visual language — same blur/border/shadow
+     recipe, so it reads as part of the same UI instead of a bolt-on */
+  .ctx-menu {
+    position: fixed; z-index: 900;
+    min-width: 200px; padding: 6px;
+    border-radius: 14px;
+    background: rgba(16,16,16,.82);
+    backdrop-filter: blur(28px) saturate(1.8);
+    -webkit-backdrop-filter: blur(28px) saturate(1.8);
+    border: 1px solid rgba(255,255,255,.11);
+    box-shadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    opacity: 0; transform: scale(.96);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity .15s ease, transform .15s var(--ease-spring);
+  }
+  .ctx-menu.ready { opacity: 1; transform: scale(1); pointer-events: auto; }
+  .ctx-item {
+    display: block; width: 100%;
+    padding: 9px 12px; border-radius: 9px;
+    font-family: var(--ui); font-size: 13px; font-weight: 500;
+    color: rgba(255,255,255,.75);
+    text-decoration: none; background: none; border: none; cursor: pointer;
+    text-align: left;
+    transition: background .15s ease, color .15s ease;
+  }
+  .ctx-item:hover { background: rgba(214,52,8,.16); color: #fff; }
+  .ctx-sep { height: 1px; background: rgba(255,255,255,.08); margin: 5px 8px; }
+  .ctx-foot {
+    display: block; padding: 8px 12px 4px;
+    font-family: var(--ui); font-size: 10px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.28);
+  }
+
+  /* ─── HERO ──────────────────────────────── */
+  .hero {
+    min-height: 100svh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 64px 80px;
+    position: relative; overflow: hidden;
+  }
+  /* ambient glow — a blurred blob drifting slowly behind the copy,
+     instead of a static gradient wash */
+  .hero::before {
+    content: ''; position: absolute; pointer-events: none;
+    top: -10%; left: 38%;
+    width: 55vw; height: 55vw; max-width: 640px; max-height: 640px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214,52,8,.4) 0%, transparent 70%);
+    filter: blur(90px);
+    will-change: transform;
+    animation: heroGlowDrift 22s var(--ease-spring) infinite alternate;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero::before { animation: none; }
+  }
+
+  .hero-kicker {
+    font-family: var(--ui); font-size: 11px; font-weight: 600;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(255,255,255,.55); margin-bottom: 28px;
+    opacity: 1;
+    animation: wordmarkIn .6s var(--ease-out) forwards;
+  }
+  .hero-wordmark {
+    font-family: var(--logo);
+    font-size: clamp(68px, 13.5vw, 196px);
+    line-height: .9; color: #fff;
+    /* opacity:1 immediately so browser registers LCP at paint time */
+    opacity: 1;
+    animation: wordmarkIn .9s var(--ease-out) forwards;
+  }
+  .hero-rule {
+    width: 100%; height: 1px;
+    background: rgba(255,255,255,.07);
+    margin: 52px 0 44px;
+    opacity: 1; transform-origin: left;
+    animation: expandRule .7s var(--ease-out) forwards;
+  }
+  .hero-foot {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    opacity: 1;
+    animation: wordmarkIn .7s var(--ease-out) forwards;
+  }
+  .hero-desc {
+    font-family: var(--ui); font-size: 17px; font-weight: 400;
+    line-height: 1.68; color: rgba(255,255,255,.6); max-width: 400px;
+  }
+  .hero-desc b { color: rgba(255,255,255,.8); font-weight: 600; }
+
+  /* ─── BUTTONS ───────────────────────────── */
+  .btn {
+    font-family: var(--ui); font-size: 14px; font-weight: 600;
+    padding: 14px 30px; border-radius: 999px;
+    text-decoration: none; display: inline-block;
+    letter-spacing: -.005em;
+    transition: background .22s ease, color .22s ease, transform .22s var(--ease-spring);
+    will-change: transform;
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: scale(.96) translateY(0); transition-duration: .1s; }
+
+  .btn-white       { background: #fff; color: var(--ink); }
+  .btn-white:hover { background: var(--red); color: #fff; }
+
+  .btn-ghost       { background: rgba(255,255,255,.08); color: rgba(255,255,255,.52); margin-left: 10px; }
+  .btn-ghost:hover { background: rgba(255,255,255,.13); color: #fff; }
+
+  .btn-dark        { background: var(--ink); color: var(--paper); }
+  .btn-dark:hover  { background: var(--red); color: #fff; }
+
+  /* ─── STATEMENT ─────────────────────────── */
+  .statement {
+    background: var(--paper); color: var(--ink);
+    padding: 112px 64px;
+    border-bottom: 1px solid var(--line);
+  }
+  .statement-h {
+    font-family: var(--ui);
+    font-size: clamp(38px, 5.2vw, 76px);
+    font-weight: 500; line-height: 1.08; letter-spacing: -.022em;
+    max-width: 840px;
+  }
+  .statement-h em { font-style: normal; font-weight: 400; color: var(--dim-on-paper); }
+  .statement-foot { display: flex; justify-content: flex-end; margin-top: 52px; }
+  .statement-note {
+    font-family: var(--ui); font-size: 15px; font-weight: 400;
+    line-height: 1.72; color: var(--dim-on-paper); max-width: 340px; text-align: right;
+  }
+
+  /* ─── WORK ──────────────────────────────── */
+  .work-section { background: var(--ink); padding: 96px 64px; }
+
+  .section-kicker {
+    font-family: var(--ui); font-size: 11px; font-weight: 600;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(255,255,255,.5); margin-bottom: 52px;
+  }
+
+  /*
+    Row is now a column: the original flex line (thumb/tag/name/arrow)
+    plus a second child that's collapsed to zero height until hover —
+    a 3-image "preview" strip that slides open underneath. Using a
+    grid-template-rows 0fr→1fr transition on the wrapper (not
+    max-height) since it animates to the content's real height
+    without needing to know it up front, and doesn't jank if the
+    content size ever changes.
+  */
+  .project-row {
+    display: flex; flex-direction: column;
+    padding: 30px 0;
+    border-top: 1px solid rgba(255,255,255,.055);
+    text-decoration: none; color: inherit;
+  }
+  .project-row:last-child { border-bottom: 1px solid rgba(255,255,255,.055); }
+  .project-row:active { opacity: .92; }
+
+  /* translateX on hover (not padding) = GPU composited, zero layout
+     shift, perfectly fluid spring feel — lives on the top line only,
+     independent of the preview strip's own reveal motion below it. */
+  .project-row-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+    transform: translateX(0);
+    transition: transform .55s var(--ease-spring);
+    will-change: transform;
+  }
+  .project-row:hover .project-row-top  { transform: translateX(10px); }
+  .project-row:active .project-row-top { transform: translateX(8px) scale(.99); }
+
+  /* colour-coded tile standing in for a screenshot/thumbnail */
+  .project-thumb {
+    width: 56px; height: 56px; flex-shrink: 0;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--logo); font-size: 15px; color: rgba(255,255,255,.92);
+    letter-spacing: -.01em;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 6px 18px rgba(0,0,0,.28);
+    transition: transform .55s var(--ease-spring);
+  }
+  .project-row:hover .project-thumb { transform: scale(1.05); }
+
+  .project-tag {
+    font-family: var(--ui); font-size: 11px; font-weight: 500;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.5); width: 180px; flex-shrink: 0;
+    transition: color .3s ease;
+  }
+  .project-row:hover .project-tag { color: rgba(255,255,255,.4); }
+
+  .project-body { flex: 1; }
+
+  .project-name {
+    font-family: var(--ui);
+    font-size: clamp(26px, 3.2vw, 46px);
+    font-weight: 500; font-style: italic;
+    color: rgba(255,255,255,.88); flex: 1; letter-spacing: -.015em;
+    transition: color .3s ease;
+  }
+  .project-row:hover .project-name { color: #fff; }
+
+  .project-arrow {
+    color: rgba(255,255,255,.45); font-size: 18px; flex-shrink: 0;
+    transition: color .3s ease, transform .55s var(--ease-spring);
+  }
+  .project-row:hover .project-arrow { color: var(--red); transform: translateX(5px); }
+  .project-result {
+    font-family: var(--ui); font-size: 11px; color: rgba(255,255,255,.5);
+    margin-top: 4px; letter-spacing: .04em;
+  }
+
+  /* ── preview strip: hover-to-reveal, 3 panels per project ──
+     Real screenshots (see DEMOS' previews array) were captured at
+     1366×768 desktop (hero/grid) and a Galaxy S20 Ultra's native
+     1440×3200 (mobile) — 16:9 and 9:20 respectively, almost exactly
+     (1366:768 is 1.7786 vs 16:9's 1.7778 — a 0.05% difference, and
+     1440:3200 reduces to exactly 9:20). Panels are boxed at those
+     same ratios so the real screenshots fill them edge to edge
+     instead of getting cropped by object-fit for not matching the
+     box shape. Any project still on <PreviewMock> gets the same
+     boxes, so swapping in real screenshots later is a drop-in. */
+  .project-preview-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .5s var(--ease-out);
+  }
+  .project-row:hover .project-preview-wrap { grid-template-rows: 1fr; }
+  .project-preview {
+    overflow: hidden;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  /* real screenshots are wrapped in <picture> (WebP + JPEG fallback) —
+     display:contents unwraps it from the box tree so .preview-mock
+     (the <img> itself) becomes the actual flex item, same as the
+     unwrapped <PreviewMock> fallback still is */
+  .project-preview > picture { display: contents; }
+  .preview-mock { margin-top: 22px; }
+
+  /*
+    Sizing: --preview-h is set from JS (measured off the row's real
+    rendered width, see the previewH effect) to whatever height makes
+    two 16:9 panels + one 9:20 panel exactly fill that width — same
+    "flex-grow equals its own aspect-ratio" math as before, just
+    computed directly instead of leaning on the browser to derive it.
+    Tried letting flexbox do it (flex-grow: <ratio>, flex-basis: 0)
+    and Chromium wasn't resolving the cross-size from aspect-ratio the
+    way spec suggests — panels came out ~8% taller than the width
+    actually justified, leaving the strip narrower than the row with
+    dead space on the right. Explicit height sidesteps that: aspect-
+    ratio deriving WIDTH from a definite height is the well-supported
+    direction. The 300px fallback only shows for one frame before the
+    effect measures and sets the real value.
+  */
+  .preview-mock {
+    flex: none; height: var(--preview-h, 300px); width: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .4s ease, transform .4s var(--ease-out);
+  }
+  .project-row:hover .preview-mock { opacity: 1; transform: translateY(0); }
+  /* nth-child is DOM position, unaffected by display:contents on the
+     <picture> wrapper — but the wrapper still means .preview-mock
+     itself isn't always the nth child, so match both the unwrapped
+     PreviewMock case and the wrapped real-<img> case */
+  .project-preview > :nth-child(2).preview-mock,
+  .project-preview > :nth-child(2) .preview-mock { transition-delay: .05s; }
+  .project-preview > :nth-child(3).preview-mock,
+  .project-preview > :nth-child(3) .preview-mock { transition-delay: .1s; }
+  /* object-fit only — NOT width/height:100%, which (being img.preview-mock,
+     higher specificity than the plain .preview-mock class above) was
+     silently overriding the var(--preview-h)-driven sizing and forcing
+     the img to stretch to fill the row before aspect-ratio ever got a say */
+  img.preview-mock { display: block; object-fit: cover; }
+  .preview-mock-mobile { aspect-ratio: 9 / 20; }
+  .preview-chrome { display: flex; gap: 4px; padding: 8px 10px; background: rgba(0,0,0,.15); flex-shrink: 0; }
+  .preview-chrome span { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.4); }
+  .preview-body { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .preview-block { background: rgba(255,255,255,.24); border-radius: 6px; }
+  .preview-block-hero { height: 42%; }
+  .preview-block-sm { height: 34%; }
+  .preview-line { height: 6px; border-radius: 3px; background: rgba(255,255,255,.32); flex-shrink: 0; }
+  .preview-pill { width: 42%; height: 14px; border-radius: 999px; background: rgba(255,255,255,.92); margin-top: auto; flex-shrink: 0; }
+  .preview-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .preview-grid span { background: rgba(255,255,255,.24); border-radius: 5px; }
+  .preview-mobile-frame { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+  @media (max-width: 768px) {
+    .project-preview-wrap { display: none; } /* hover doesn't apply on touch */
+  }
+
+  /* ─── SPRINT ────────────────────────────── */
+  .sprint-section {
+    background: var(--paper); color: var(--ink);
+    display: grid; grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--line);
+  }
+  .sprint-left {
+    padding: 96px 64px; border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 16px;
+  }
+  .sprint-num {
+    font-family: var(--logo);
+    font-size: clamp(88px, 13vw, 172px);
+    line-height: .88; color: var(--ink); letter-spacing: -.01em;
+  }
+  .sprint-num span { color: var(--red); }
+  .sprint-meta { display: flex; flex-direction: column; gap: 10px; }
+  .sprint-label { font-family: var(--ui); font-size: 14px; font-weight: 500; color: var(--dim-on-paper); }
+  .sprint-steps {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--ui); font-size: 11px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--dim-on-paper);
+  }
+  .sprint-steps-sep { color: rgba(16,16,16,.35); font-size: 10px; }
+  .sprint-steps-live { color: var(--red-ink); }
+  .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  .sprint-h {
+    font-family: var(--ui);
+    font-size: clamp(30px, 3.8vw, 50px);
+    font-weight: 500; line-height: 1.12; letter-spacing: -.02em; color: var(--ink);
+  }
+  .sprint-h em { font-style: normal; font-weight: 400; color: var(--dim-on-paper); }
+  .sprint-body { font-family: var(--ui); font-size: 16px; line-height: 1.72; color: var(--dim-on-paper); max-width: 400px; }
+
+  /*
+    ─── CONTACT (closes out the CTA section, not standalone) ──
+    Was a 3-column grid with equal-width cells — forced "Email"
+    into the same width as "Instagram" and left it looking hollow.
+    Pills that size to their own content instead: every card reads
+    at the same visual density regardless of label length.
+  */
+  .contact-grid {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 14px; margin-top: 48px;
+  }
+
+  .contact-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 999px;
+    padding: 18px 28px 18px 22px;
+    text-decoration: none; color: inherit;
+    display: flex; align-items: center; gap: 24px;
+    position: relative; overflow: hidden;
+    transition: transform .2s var(--ease-spring), border-color .3s ease;
+  }
+  .contact-card:hover { border-color: transparent; }
+
+  /*
+    Whole-card color swipe on hover.
+    translateX(-101% → 0) on ::after pseudo element.
+    Text sits above via z-index.
+  */
+  .contact-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: var(--red);
+    transform: translateX(-101%);
+    transition: transform .45s cubic-bezier(.76,0,.18,1);
+    z-index: 0;
+  }
+  .contact-card:hover::after { transform: translateX(0); }
+  .contact-card:active { transform: scale(.98); }
+
+  .contact-lead {
+    display: flex; align-items: center; gap: 13px;
+    position: relative; z-index: 1;
+  }
+  .contact-icon {
+    color: rgba(255,255,255,.32); flex-shrink: 0;
+    transition: color .3s ease;
+  }
+  .contact-card:hover .contact-icon { color: rgba(255,255,255,.85); }
+
+  .contact-platform {
+    font-family: var(--ui);
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 300; font-style: italic;
+    color: rgba(255,255,255,.9);
+    transition: color .3s ease;
+  }
+  .contact-card:hover .contact-platform { color: #fff; }
+
+  /* single arrow, brightens on hover — was a two-SVG crossfade, cut for less noise */
+  .contact-arrow {
+    position: relative; z-index: 1; flex-shrink: 0;
+    color: rgba(255,255,255,.3);
+    transition: color .28s ease, transform .3s var(--ease-spring);
+  }
+  .contact-card:hover .contact-arrow { color: #fff; transform: translate(2px, -2px); }
+
+
+  /*
+    ─── PRICING ───────────────────────────────
+    Was paper/light — same tone as Sprint right above it, so the two
+    sections ran together as one long light block with nothing but a
+    1px line between them, breaking the dark/light alternation every
+    other section pair follows. Flipped to dark (ink) to restore that
+    rhythm: hero(dark) statement(light) work(dark) sprint(light)
+    pricing(dark) cta(dark). Card colours below are the light/dark
+    pair from before, just applied to the opposite card — the
+    "featured" tier now pops as the light card against a dark
+    section instead of a dark card against a light one.
+  */
+  .pricing-section {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 96px 64px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    background: transparent;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 52px;
+    border: 1px solid rgba(255,255,255,.09);
+  }
+  .pricing-card {
+    background: rgba(255,255,255,.03);
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: background .25s ease;
+    position: relative;
+    border: 1px solid rgba(255,255,255,.09);
+    margin: -1px;
+  }
+  .pricing-card:hover { background: rgba(255,255,255,.06); }
+  .pricing-card.featured {
+    background: var(--paper);
+    border-color: var(--paper);
+  }
+  .pricing-card.featured:hover { background: #E8E3DA; }
+  .pricing-tag {
+    font-family: var(--ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+  }
+  .pricing-card.featured .pricing-tag { color: var(--dim-on-paper); }
+  .pricing-tag-pill {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-family: var(--ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+  .pricing-name {
+    font-family: var(--ui);
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 600;
+    line-height: 1.1;
+    color: #fff;
+  }
+  .pricing-card.featured .pricing-name { color: var(--ink); }
+  .pricing-price {
+    font-family: var(--ui);
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: -.02em;
+  }
+  .pricing-card.featured .pricing-price { color: var(--ink); }
+  .pricing-price span {
+    font-family: var(--ui);
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,.55);
+    letter-spacing: 0;
+  }
+  .pricing-card.featured .pricing-price span { color: var(--dim-on-paper); }
+  .pricing-divider {
+    height: 1px;
+    background: rgba(255,255,255,.1);
+  }
+  .pricing-card.featured .pricing-divider { background: var(--line); }
+  .pricing-desc {
+    font-family: var(--ui);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: rgba(255,255,255,.5);
+    flex: 1;
+  }
+  .pricing-card.featured .pricing-desc { color: var(--dim-on-paper); }
+  .pricing-meta {
+    font-family: var(--ui);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    color: rgba(255,255,255,.55);
+    text-transform: uppercase;
+  }
+  .pricing-card.featured .pricing-meta { color: var(--dim-on-paper); }
+  .pricing-footnote {
+    font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.5);
+    margin-top: 32px; text-align: center;
+  }
+  .pricing-footnote a {
+    color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.3);
+  }
+
+  @media (max-width: 768px) {
+    .pricing-section { padding: 56px 24px; }
+    .pricing-grid { grid-template-columns: 1fr; border-radius: 14px; }
+    .pricing-card { padding: 36px 28px; }
+    .pricing-card.featured { order: -1; }
+  }
+
+  /*
+    ─── CTA ───────────────────────────────────
+    Sits right after Pricing, and both were plain var(--ink) — same
+    problem as the Sprint/Pricing seam, just one section later: only
+    Pricing's faint border-bottom stood between two identical dark
+    fills. Flipping CTA to paper (matching the alternation everywhere
+    else) would undercut the whole point of a bold, dark closing
+    moment, so instead it gets a genuinely deeper black than the
+    content sections (a "spotlight" shade, not just var(--ink) again)
+    plus a visible red glow bleeding down from the top edge — using
+    the actual brand accent to mark the seam deliberately, rather
+    than another near-black tint that risks the same muddy/brown
+    read the base ink colour just got fixed for.
+  */
+  .cta-section {
+    background:
+      linear-gradient(180deg, rgba(214,52,8,.07) 0%, transparent 22%),
+      #0A0A0A;
+    padding: 132px 64px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  /* ambient red glow rising from below — signals action zone */
+  .cta-section::before {
+    content: ''; position: absolute;
+    bottom: -120px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(214,52,8,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-h {
+    font-family: var(--ui);
+    font-size: clamp(50px, 8vw, 116px);
+    font-weight: 600; line-height: 1.04; letter-spacing: -.03em;
+    color: #fff; margin-bottom: 32px; position: relative;
+  }
+  .cta-h em { font-style: normal; font-weight: 400; color: rgba(255,255,255,.35); }
+  .cta-sub {
+    font-family: var(--ui); font-size: 16px; font-weight: 400;
+    color: rgba(255,255,255,.6); line-height: 1.65;
+    margin-bottom: 48px; max-width: 320px;
+    margin-left: auto; margin-right: auto;
+    position: relative;
+  }
+  /* contact grid, reused here to close the CTA section — tighter
+     top margin than its original standalone use since cta-sub
+     already carries margin-bottom */
+  .cta-section .contact-grid { margin-top: 8px; max-width: 720px; margin-left: auto; margin-right: auto; }
+
+  /* ─── FOOTER ────────────────────────────── */
+  footer {
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,.05);
+    padding: 64px 64px 0;
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px;
+  }
+  .f-wordmark { font-family: var(--logo); font-size: 20px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+  .f-about    { font-family: var(--ui); font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.65; max-width: 200px; }
+  .f-h        { font-family: var(--ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 18px; }
+  .f-links    { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .f-links a  {
+    font-family: var(--ui); font-size: 14px; color: rgba(255,255,255,.6);
+    text-decoration: none; display: inline-block; position: relative;
+    transition: color .22s ease;
+  }
+  /* slide-in underline — mirrors dock-a behaviour */
+  .f-links a::after {
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 100%; height: 1px;
+    background: rgba(255,255,255,.5);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .28s var(--ease-out);
+  }
+  .f-links a:hover { color: #fff; }
+  .f-links a:hover::after { transform: scaleX(1); }
+
+  .f-base {
+    grid-column: 1 / -1; /* footer is a grid now that f-base lives inside it — span every column */
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,.05);
+    margin: 0 -64px; padding: 24px 64px; /* cancel + reapply footer's own inset so f-base's border/bg run edge-to-edge */
+    display: flex; justify-content: space-between;
+  }
+  .f-copy { font-family: var(--ui); font-size: 12px; color: rgba(255,255,255,.5); }
+  .f-legal { display: flex; gap: 20px; }
+  .f-legal a {
+    font-family: var(--ui); font-size: 12px;
+    color: rgba(255,255,255,.5);
+    text-decoration: none;
+    transition: color .2s ease;
+  }
+  .f-legal a:hover { color: #fff; }
+
+  /* ─── SCROLL REVEAL ─────────────────────── */
+  .r {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity .72s var(--ease-out), transform .72s var(--ease-out);
+    will-change: opacity, transform;
+  }
+  .r.on { opacity: 1; transform: translateY(0); }
+  .r.d1 { transition-delay: .08s; }
+  .r.d2 { transition-delay: .16s; }
+  .r.d3 { transition-delay: .24s; }
+  /* project rows stagger tighter */
+  .project-row.r.d1 { transition-delay: .05s; }
+  .project-row.r.d2 { transition-delay: .12s; }
+  .project-row.r.d3 { transition-delay: .19s; }
+
+  /*
+    Mask-line reveal — for the page's big single-statement headlines
+    (Statement / Pricing / CTA), distinct from the generic fade used
+    on lists (Work rows, Pricing cards, Contact cards). Each line sits
+    in an overflow-hidden mask and slides up from below into view,
+    staggered per line, mirroring the hero wordmark's arrival.
+  */
+  .mask-line { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+  .mask-line > span {
+    display: block;
+    transform: translateY(115%);
+    transition: transform .85s var(--ease-out);
+  }
+  .r.on .mask-line > span { transform: translateY(0); }
+  .mask-line:nth-child(2) > span { transition-delay: .09s; }
+  .mask-line:nth-child(3) > span { transition-delay: .18s; }
+
+  /* ─── KEYFRAMES ─────────────────────────── */
+  @keyframes rise        { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes wordmarkIn  { from { transform:translateY(16px); } to { transform:translateY(0); } }
+  @keyframes expandRule  { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  @keyframes dockBreathe { 0%{transform:scale(1)} 45%{transform:scale(1.018)} 100%{transform:scale(1)}               }
+  @keyframes dockSheen {
+    0%, 100% { background-position: 220% 220%; }
+    50%      { background-position: -60% -60%; }
+  }
+  @keyframes dockRipple {
+    from { transform: scale(1);  opacity: 1; }
+    to   { transform: scale(20); opacity: 0; }
+  }
+  @keyframes heroGlowDrift {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-12%, 10%) scale(1.12); }
+    66%  { transform: translate(8%, -8%) scale(0.9); }
+    100% { transform: translate(-6%, 14%) scale(1.05); }
+  }
+
+  /* ─── MOBILE ────────────────────────────── */
+  @media (max-width: 768px) {
+
+    /* hide scrollbar — OS handles it on touch */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
+
+    /* dock: hide the inline nav links, pill shrinks to logo + burger
+       + cta, and the burger opens a glass card above the pill with
+       those same links instead of leaving them unreachable */
+    .dock { width: 264px; } /* 224px logo+cta base, +40px for the burger */
+    .dock-a, .dock-sep { display: none; }
+    .dock-burger { display: flex; }
+
+    .dock-shell { position: fixed; } /* menu below positions off this */
+    .dock-mobile-menu {
+      display: flex; flex-direction: column;
+      position: absolute; bottom: calc(100% + 12px); left: 50%;
+      width: 190px; padding: 8px;
+      border-radius: 20px;
+      background: rgba(16,16,16,.82);
+      backdrop-filter: blur(28px) saturate(1.8);
+      -webkit-backdrop-filter: blur(28px) saturate(1.8);
+      border: 1px solid rgba(255,255,255,.11);
+      box-shadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+      opacity: 0; pointer-events: none;
+      transform: translateX(-50%) translateY(8px) scale(.94);
+      transform-origin: bottom center;
+      transition: opacity .25s ease, transform .35s var(--ease-spring);
+    }
+    .dock-mobile-menu.open {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+    .dock-mobile-a {
+      font-family: var(--ui); font-size: 15px; font-weight: 500;
+      color: rgba(255,255,255,.75); text-decoration: none;
+      padding: 13px 16px; border-radius: 13px;
+      transition: background .15s ease, color .15s ease;
+    }
+    .dock-mobile-a:hover, .dock-mobile-a:active { background: rgba(214,52,8,.16); color: #fff; }
+
+    /* hero */
+    .hero { padding: 0 24px 96px; }
+    .hero-wordmark { font-size: clamp(52px, 16vw, 84px); }
+    .hero-foot { flex-direction: column; align-items: flex-start; gap: 24px; }
+    .hero-desc { font-size: 15px; max-width: 100%; }
+    .hero-desc br { display: none; }
+    .hero-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .hero-btns .btn { width: 100%; text-align: center; margin-left: 0; padding: 16px; font-size: 15px; }
+
+    /* statement — full-screen "scene" like the hero, not a cramped
+       half-screen. Pricing and the footer are deliberately left off
+       this pattern below: pricing genuinely needs more room for its
+       3 stacked cards, and the footer is utility content, not a
+       scene — min-height only sets a floor, so anything that
+       actually needs to be taller still can be. */
+    .statement {
+      padding: 64px 24px;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .statement-h { font-size: clamp(30px, 8vw, 44px); }
+    .statement-foot { margin-top: 28px; }
+    .statement-note { text-align: left; max-width: 100%; }
+
+    /* work — same full-screen floor; grows past it naturally once
+       there are enough projects to need more room */
+    .work-section {
+      padding: 56px 24px;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .project-row { padding: 22px 0; }
+    .project-row-top { flex-wrap: wrap; gap: 10px 8px; }
+    .project-row:hover .project-row-top { transform: none; }
+    .project-row:active { opacity: .75; }
+    .project-thumb { width: 40px; height: 40px; border-radius: 10px; font-size: 12px; }
+    .project-tag { width: auto; flex: 1; }
+    .project-body { flex-basis: 100%; order: 5; }
+    .project-name { font-size: clamp(24px, 7vw, 34px); }
+    .project-arrow { margin-left: auto; }
+
+    /* sprint: stack vertically, 24H number stays large.
+       sprint-left itself also switches to a column — row +
+       space-between with no wrap wasn't just fitting the "24H"
+       numeral (up to 90px at this width) against the meta text on
+       one line, it was overflowing the viewport horizontally. */
+    .sprint-section { grid-template-columns: 1fr; min-height: 100svh; align-content: center; }
+    .sprint-left {
+      padding: 56px 24px 36px;
+      border-right: none; border-bottom: 1px solid var(--line);
+      flex-direction: column; align-items: flex-start; gap: 20px;
+    }
+    .sprint-num { font-size: clamp(80px, 24vw, 120px); }
+    .sprint-right { padding: 36px 24px 56px; }
+    .sprint-right .btn { width: 100%; text-align: center; margin-left: 0; }
+
+    /* contact: full-width stacked rows instead of inline pills */
+    .contact-grid { flex-direction: column; gap: 10px; }
+    .contact-card {
+      border-radius: 14px;
+      padding: 20px 22px;
+      justify-content: space-between;
+    }
+    .contact-card:hover { transform: none; }
+    .contact-card:active { background: #1c1c1c; }
+
+    /* cta — same floor; the 3 stacked contact pills push it past
+       100svh anyway on most phones, which is correct, not a bug */
+    .cta-section {
+      padding: 80px 24px 100px;
+      min-height: 100svh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .cta-h { font-size: clamp(42px, 12vw, 68px); }
+    .cta-sub { font-size: 14px; margin-bottom: 36px; max-width: 100%; }
+
+    /* footer: 2 columns instead of 4 */
+    footer { grid-template-columns: 1fr 1fr; padding: 48px 24px 0; gap: 28px 16px; }
+    /* extra bottom padding so dock doesn't overlap footer */
+    .f-base { margin: 0 -24px; padding: 20px 24px 100px; flex-direction: column; gap: 4px; }
+  }
+
+  /* Separate reduced-motion block for the burger/mobile-menu rather
+     than folding into the one after .dock-cta:active — those rules
+     live inside the max-width:768px query above, later in the
+     stylesheet than that one, so an earlier override would lose to
+     them by source order on a narrow + reduced-motion browser (the
+     exact bug the other block's own comment describes). Has to come
+     after the query it's overriding, same rule, different spot. */
+  @media (prefers-reduced-motion: reduce) {
+    .dock-burger span { transition: none; }
+    .dock-mobile-menu { transition: none; }
+  }
+
+  /* ─── SMALL LANDSCAPE (phones rotated sideways) ──────────
+     .cta-h's font-size clamp scales off vw, which stays large even
+     when height is short — on a squat viewport that pushed the two
+     headline lines, sub-copy, and contact grid into a tight vertical
+     space with barely any breathing room. Cut the heading size and
+     section padding specifically for short+wide viewports. */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .cta-section { padding: 48px 24px 64px; }
+    .cta-h { font-size: clamp(34px, 7vw, 52px); margin-bottom: 20px; }
+    .cta-sub { margin-bottom: 28px; }
+  }
+
+  /*
+    ─── LIGHT MODE ──────────────────────────────
+    True inversion, not a contrast tweak: every section that's dark
+    in the default (dark-mode) design — Hero, Work, Pricing, CTA,
+    Footer — flips to light here, AND every section that's already
+    light — Statement, Sprint — flips to dark. Skipping that second
+    half was the earlier bug: leaving Statement/Sprint alone while
+    everything else turned light meant the whole page collapsed to
+    one flat paper colour, losing the alternation the design depends
+    on. Dock and context menu (floating chrome, not page sections)
+    get their own light-glass treatment either way.
+    All hardcoded rgba values are explicitly
+    overridden here to guarantee contrast.
+
+    Deliberately the LAST block in this stylesheet. Every rule below
+    matches a selector that already has an unconditional (dark-mode)
+    declaration earlier in the file, at equal specificity — a single
+    class or pseudo-element, same as its dark counterpart. CSS gives
+    the later same-specificity rule the win regardless of which one
+    sits inside a media query, so if this block lived any earlier
+    (it used to sit right after :root), every one of those matching
+    dark declarations further down the file would silently override
+    it whenever the media query actually matched, leaving light mode
+    partially dead — which is exactly what was happening: the dock,
+    the scrollbar thumb, and the context menu never actually adapted.
+    Keeping this block last is what makes it reliably win instead of
+    relying on ad hoc specificity bumps (like the .statement-scoped
+    and .sprint-right-scoped rules below still use, since scoping was
+    already needed there for a different reason — .statement-h and
+    .btn-dark are each reused by more than one section).
+  */
+  @media (prefers-color-scheme: light) {
+
+    /* ── page canvas: hero has no bg of its own, inherits this ── */
+    body { background: var(--paper); color: var(--ink); }
+
+    /* ── scrollbar — dark thumb on light track, red on hover ── */
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16,16,16,.18);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--red);
+    }
+    * { scrollbar-color: rgba(16,16,16,.18) transparent; }
+
+    /* ── dock: light glass pill ── */
+    .dock {
+      background: rgba(241,237,230,.75);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 4px 24px rgba(16,16,16,.1), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .dock-logo { color: #101010; }
+    .dock-sep  { background: rgba(16,16,16,.12); }
+    .dock-a    { color: rgba(16,16,16,.5); }
+    .dock-a:hover { color: #101010; }
+    .dock-a::after { background: rgba(16,16,16,.6); }
+    .dock-cta  { background: #101010; color: #F1EDE6; }
+    .dock-cta:hover { background: var(--red); color: #fff; }
+    /* liquid glass highlights flip to a dark tint here — white-on-
+       white barely reads, same reason the dark dock's version isn't
+       a blend mode: needs its own formula per background, not a
+       blend trick that quietly breaks on the other theme */
+    .dock::after { background: linear-gradient(115deg, transparent 35%, rgba(16,16,16,.06) 48%, transparent 62%); }
+    .dock-glow { background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(16,16,16,.1), transparent 68%); }
+    .dock-ripple { background: radial-gradient(circle, rgba(16,16,16,.18) 0%, rgba(16,16,16,.05) 45%, transparent 72%); }
+    /* mobile burger + menu: dark lines/text on the light glass pill */
+    .dock-burger span { background: rgba(16,16,16,.7); }
+    .dock-mobile-menu {
+      background: rgba(241,237,230,.92);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .dock-mobile-a { color: rgba(16,16,16,.65); }
+    .dock-mobile-a:hover, .dock-mobile-a:active { background: rgba(214,52,8,.12); color: #101010; }
+
+    /* ── context menu: light glass card ── */
+    .ctx-menu {
+      background: rgba(241,237,230,.92);
+      border-color: rgba(16,16,16,.12);
+      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .ctx-item { color: rgba(16,16,16,.65); }
+    .ctx-item:hover { background: rgba(214,52,8,.12); color: #101010; }
+    .ctx-sep { background: rgba(16,16,16,.1); }
+    .ctx-foot { color: rgba(16,16,16,.35); }
+
+    /* ── hero: was always-dark, now matches the paper sections ── */
+    .hero::before { background: radial-gradient(circle, rgba(214,52,8,.28) 0%, transparent 70%); }
+    .hero-kicker { color: rgba(16,16,16,.55); }
+    .hero-wordmark { color: #101010; }
+    .hero-rule { background: var(--line); }
+    .hero-desc { color: var(--dim-on-paper); }
+    .hero-desc b { color: #101010; }
+    /* btn-white/btn-ghost are hero-only — a white pill on a now-light
+       hero would vanish, so they swap roles: solid-dark primary,
+       dark-tinted ghost, same pattern .btn-dark already uses on Sprint */
+    .btn-white       { background: #101010; color: var(--paper); }
+    .btn-white:hover { background: var(--red); color: #fff; }
+    .btn-ghost       { background: rgba(16,16,16,.06); color: rgba(16,16,16,.55); }
+    .btn-ghost:hover { background: rgba(16,16,16,.1); color: #101010; }
+
+    /* ── work (was always-dark) ── */
+    .work-section { background: var(--paper); color: var(--ink); }
+    .section-kicker { color: var(--dim-on-paper); }
+    .project-row, .project-row:last-child { border-color: var(--line); }
+    .project-tag { color: var(--dim-on-paper); }
+    .project-row:hover .project-tag { color: rgba(16,16,16,.35); }
+    .project-name { color: rgba(16,16,16,.85); }
+    .project-row:hover .project-name { color: #101010; }
+    .project-arrow { color: rgba(16,16,16,.45); }
+    .project-result { color: var(--dim-on-paper); }
+    /* project-thumb tiles keep their own brand-gradient colours —
+       self-contained, reads fine against either section tone */
+
+    /* ── statement (was the always-light "paper" section) ──
+       Every other section just swapped dark<->light. This one was
+       already light in dark mode, so leaving it alone in light mode
+       would mean it — plus every dark section that just flipped TO
+       light — all end up the same flat paper colour, killing the
+       alternation the whole page is built on. It flips to dark here,
+       same as its dark-mode neighbours flip to light.
+       .statement-h is shared with Pricing's headline (inherits colour
+       from whichever section it's in), so this stays scoped to
+       .statement rather than touching the bare class. */
+    .statement { background: #101010; color: #F1EDE6; border-bottom-color: rgba(255,255,255,.06); }
+    .statement .statement-h     { color: #F1EDE6; }
+    .statement .statement-h em  { color: rgba(241,237,230,.55); }
+    .statement-note  { color: rgba(241,237,230,.6); }
+
+    /* ── sprint (was the always-light "paper" section) — same flip ── */
+    .sprint-section  { background: #101010; color: #F1EDE6; border-bottom-color: rgba(255,255,255,.06); }
+    .sprint-left     { border-color: rgba(255,255,255,.08); } /* border-right desktop, border-bottom mobile */
+    .sprint-num      { color: #F1EDE6; }
+    .sprint-label    { color: rgba(241,237,230,.6); }
+    .sprint-steps    { color: rgba(241,237,230,.6); }
+    .sprint-steps-sep { color: rgba(255,255,255,.3); }
+    .sprint-steps-live { color: #FF5A2E; } /* brighter red — sprint is now on --ink, --red-ink is too dark here */
+    .sprint-h        { color: #F1EDE6; }
+    .sprint-h em     { color: rgba(241,237,230,.55); }
+    .sprint-body     { color: rgba(241,237,230,.6); }
+    /* btn-dark was a dark pill on Sprint's light bg — Sprint is dark
+       now, so it inverts to a light pill, same pattern hero's
+       btn-white uses in reverse */
+    .sprint-right .btn-dark {
+      background: #F1EDE6;
+      color: #101010;
+    }
+    .sprint-right .btn-dark:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* ── pricing (was always-dark) ──
+       Pricing's whole point is the featured card popping against its
+       neighbours — was a light card on a dark section. With the
+       section now light too, the contrast pair has to flip: featured
+       becomes the dark card, the other two become light-tinted. */
+    .pricing-section { background: var(--paper); color: var(--ink); border-bottom-color: var(--line); }
+    .pricing-grid { border-color: var(--line); }
+    .pricing-card {
+      background: rgba(16,16,16,.025);
+      border-color: var(--line);
+    }
+    .pricing-card:hover { background: rgba(16,16,16,.05); }
+    .pricing-card .pricing-tag    { color: var(--dim-on-paper); }
+    .pricing-card .pricing-name   { color: var(--ink); }
+    .pricing-card .pricing-price  { color: var(--ink); }
+    .pricing-card .pricing-price span { color: var(--dim-on-paper); }
+    .pricing-card .pricing-divider { background: var(--line); }
+    .pricing-card .pricing-desc   { color: var(--dim-on-paper); }
+    .pricing-card .pricing-meta   { color: var(--dim-on-paper); }
+    /* featured: inverted again on top of the above — dark card,
+       light text, so it's the one that pops now */
+    .pricing-card.featured {
+      background: #101010;
+      border-color: #101010;
+    }
+    .pricing-card.featured:hover { background: #1c1c1c; }
+    .pricing-card.featured .pricing-tag    { color: rgba(255,255,255,.55); }
+    .pricing-card.featured .pricing-name   { color: #fff; }
+    .pricing-card.featured .pricing-price  { color: #fff; }
+    .pricing-card.featured .pricing-price span { color: rgba(255,255,255,.55); }
+    .pricing-card.featured .pricing-divider { background: rgba(255,255,255,.1); }
+    .pricing-card.featured .pricing-desc   { color: rgba(255,255,255,.5); }
+    .pricing-card.featured .pricing-meta   { color: rgba(255,255,255,.55); }
+    .pricing-footnote { color: var(--dim-on-paper); }
+    .pricing-footnote a { color: #101010; border-bottom-color: rgba(16,16,16,.3); }
+
+    /* ── cta / contact (was always-dark) ── */
+    .cta-section {
+      background:
+        linear-gradient(180deg, rgba(214,52,8,.05) 0%, transparent 22%),
+        var(--paper);
+    }
+    .cta-section::before { background: radial-gradient(ellipse, rgba(214,52,8,.12) 0%, transparent 70%); }
+    .cta-h { color: #101010; }
+    .cta-h em { color: var(--dim-on-paper); }
+    .cta-sub { color: var(--dim-on-paper); }
+    /* contact-card resting state — hover still swipes to solid red
+       with white text/icon, which stays correct on either bg, so
+       only the resting (pre-hover) colours need to flip here */
+    .contact-card { background: rgba(16,16,16,.03); border-color: var(--line); }
+    .contact-icon { color: rgba(16,16,16,.35); }
+    .contact-platform { color: rgba(16,16,16,.85); }
+    .contact-arrow { color: rgba(16,16,16,.35); }
+    @media (max-width: 768px) {
+      .contact-card:active { background: rgba(16,16,16,.06); }
+    }
+
+    /* ── footer (was always-dark) ── */
+    footer, .f-base { background: var(--paper); border-top-color: var(--line); }
+    .f-wordmark { color: rgba(16,16,16,.7); }
+    .f-about    { color: var(--dim-on-paper); }
+    .f-h        { color: var(--dim-on-paper); }
+    .f-links a  { color: rgba(16,16,16,.6); }
+    .f-links a::after { background: rgba(16,16,16,.5); }
+    .f-links a:hover { color: #101010; }
+    .f-copy     { color: var(--dim-on-paper); }
+    .f-legal a  { color: var(--dim-on-paper); }
+    .f-legal a:hover { color: #101010; }
+  }
+
+  /* ─── ACCESSIBILITY ─────────────────────── */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
