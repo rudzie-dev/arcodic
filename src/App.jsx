@@ -1717,7 +1717,7 @@ export default function App() {
         ref={workSectionRef}
         style={{ "--preview-h": `${previewH}px` }}
       >
-        <p className="section-kicker r">Selected work</p>
+        <h2 className="section-kicker r">Selected work</h2>
         {DEMOS.map((d, i) => (
           <a
             key={d.name}
