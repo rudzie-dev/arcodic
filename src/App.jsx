@@ -48,6 +48,9 @@ const CSS = `
                                  works (4.97:1), just applied unconditionally. */
     --line:   rgba(16,16,16,.07);
     --red:    #D63408;
+    --red-ink: #B82C06; /* --red only hits 4.13:1 on --paper — fails AA (4.5:1) for
+                            normal-size text. Use this for small red text on paper;
+                            large text (headings, the sprint numeral) is fine with --red. */
     --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --logo:   'Cal Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
@@ -491,7 +494,7 @@ const CSS = `
   }
   .project-row:hover .project-arrow { color: var(--red); transform: translateX(5px); }
   .project-result {
-    font-family: var(--ui); font-size: 11px; color: rgba(255,255,255,.35);
+    font-family: var(--ui); font-size: 11px; color: rgba(255,255,255,.5);
     margin-top: 4px; letter-spacing: .04em;
   }
 
@@ -592,7 +595,7 @@ const CSS = `
     color: var(--dim-on-paper);
   }
   .sprint-steps-sep { color: rgba(16,16,16,.35); font-size: 10px; }
-  .sprint-steps-live { color: var(--red); }
+  .sprint-steps-live { color: var(--red-ink); }
   .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
   .sprint-h {
     font-family: var(--ui);
@@ -875,9 +878,10 @@ const CSS = `
   .f-links a:hover::after { transform: scaleX(1); }
 
   .f-base {
+    grid-column: 1 / -1; /* footer is a grid now that f-base lives inside it — span every column */
     background: var(--ink);
     border-top: 1px solid rgba(255,255,255,.05);
-    padding: 24px 64px;
+    margin: 0 -64px; padding: 24px 64px; /* cancel + reapply footer's own inset so f-base's border/bg run edge-to-edge */
     display: flex; justify-content: space-between;
   }
   .f-copy { font-family: var(--ui); font-size: 12px; color: rgba(255,255,255,.5); }
@@ -1063,7 +1067,7 @@ const CSS = `
     /* footer: 2 columns instead of 4 */
     footer { grid-template-columns: 1fr 1fr; padding: 48px 24px 0; gap: 28px 16px; }
     /* extra bottom padding so dock doesn't overlap footer */
-    .f-base { padding: 20px 24px 100px; flex-direction: column; gap: 4px; }
+    .f-base { margin: 0 -24px; padding: 20px 24px 100px; flex-direction: column; gap: 4px; }
   }
 
   /* Separate reduced-motion block for the burger/mobile-menu rather
@@ -1193,14 +1197,14 @@ const CSS = `
 
     /* ── work (was always-dark) ── */
     .work-section { background: var(--paper); color: var(--ink); }
-    .section-kicker { color: rgba(16,16,16,.5); }
+    .section-kicker { color: var(--dim-on-paper); }
     .project-row, .project-row:last-child { border-color: var(--line); }
-    .project-tag { color: rgba(16,16,16,.5); }
+    .project-tag { color: var(--dim-on-paper); }
     .project-row:hover .project-tag { color: rgba(16,16,16,.35); }
     .project-name { color: rgba(16,16,16,.85); }
     .project-row:hover .project-name { color: #101010; }
     .project-arrow { color: rgba(16,16,16,.45); }
-    .project-result { color: rgba(16,16,16,.4); }
+    .project-result { color: var(--dim-on-paper); }
     /* project-thumb tiles keep their own brand-gradient colours —
        self-contained, reads fine against either section tone */
 
@@ -1226,6 +1230,7 @@ const CSS = `
     .sprint-label    { color: rgba(241,237,230,.6); }
     .sprint-steps    { color: rgba(241,237,230,.6); }
     .sprint-steps-sep { color: rgba(255,255,255,.3); }
+    .sprint-steps-live { color: #FF5A2E; } /* brighter red — sprint is now on --ink, --red-ink is too dark here */
     .sprint-h        { color: #F1EDE6; }
     .sprint-h em     { color: rgba(241,237,230,.55); }
     .sprint-body     { color: rgba(241,237,230,.6); }
@@ -1302,7 +1307,7 @@ const CSS = `
     footer, .f-base { background: var(--paper); border-top-color: var(--line); }
     .f-wordmark { color: rgba(16,16,16,.7); }
     .f-about    { color: var(--dim-on-paper); }
-    .f-h        { color: rgba(16,16,16,.5); }
+    .f-h        { color: var(--dim-on-paper); }
     .f-links a  { color: rgba(16,16,16,.6); }
     .f-links a::after { background: rgba(16,16,16,.5); }
     .f-links a:hover { color: #101010; }
@@ -1941,14 +1946,14 @@ export default function App() {
             ))}
           </ul>
         </div>
-      </footer>
-      <div className="f-base">
-        <span className="f-copy">© {new Date().getFullYear()} ARCODIC. All rights reserved.</span>
-        <div className="f-legal">
-          <a href="/privacy.html">Privacy Policy</a>
-          <a href="/terms.html">Terms of Service</a>
+        <div className="f-base">
+          <span className="f-copy">© {new Date().getFullYear()} ARCODIC. All rights reserved.</span>
+          <div className="f-legal">
+            <a href="/privacy.html">Privacy Policy</a>
+            <a href="/terms.html">Terms of Service</a>
+          </div>
         </div>
-      </div>
+      </footer>
 
       {/* ── CONTEXT MENU ─────────────────────── */}
       {ctxMenu.visible && (
