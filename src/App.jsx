@@ -1310,6 +1310,13 @@ const CSS = `
     .f-legal a  { color: var(--dim-on-paper); }
     .f-legal a:hover { color: #101010; }
   }
+
+  /* ─── ACCESSIBILITY ─────────────────────── */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
 `;
 
 // ─── DATA ────────────────────────────────────────────────────────
@@ -1643,6 +1650,7 @@ export default function App() {
       <div className={`dock-shell${dockVisible ? " visible" : ""}`}>
         <nav
           className={`dock${breathe ? " breathe" : ""}`}
+          aria-label="Primary"
           ref={dockRef}
           onMouseMove={dockPointerMove}
           onMouseDown={dockPointerDown}
@@ -1668,6 +1676,7 @@ export default function App() {
               className={`dock-burger${menuOpen ? " open" : ""}`}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
+              aria-controls="dock-mobile-menu"
               onClick={() => setMenuOpen(o => !o)}
             >
               <span /><span /><span />
@@ -1675,12 +1684,16 @@ export default function App() {
             <a href="#contact" className="dock-cta">Let&#39;s build</a>
           </div>
         </nav>
-        <div className={`dock-mobile-menu${menuOpen ? " open" : ""}`}>
+        <nav
+          id="dock-mobile-menu"
+          aria-label="Mobile"
+          className={`dock-mobile-menu${menuOpen ? " open" : ""}`}
+        >
           <a href="#work"    className="dock-mobile-a" onClick={() => setMenuOpen(false)}>Work</a>
           <a href="#sprint"  className="dock-mobile-a" onClick={() => setMenuOpen(false)}>24H</a>
           <a href="#pricing" className="dock-mobile-a" onClick={() => setMenuOpen(false)}>Pricing</a>
           <a href="#contact" className="dock-mobile-a" onClick={() => setMenuOpen(false)}>Contact</a>
-        </div>
+        </nav>
       </div>
 
       <main>{/* ── HERO ─────────────────────────────── */}
@@ -1749,16 +1762,22 @@ export default function App() {
                 <span className="project-name">{d.name}</span>
                 {d.result && <p className="project-result">{d.result}</p>}
               </div>
-              <span className="project-arrow">→</span>
+              <span className="project-arrow" aria-hidden="true">→</span>
+              <span className="sr-only">(opens in new tab)</span>
             </div>
             <div className="project-preview-wrap">
-              <div className="project-preview">
+              {/* Decorative previews: the row above already names and
+                  describes the project, so these are supplementary
+                  screenshots, not the link's accessible name — marking
+                  them alt="" avoids a screen reader repeating the
+                  project name three times inside one link. */}
+              <div className="project-preview" aria-hidden="true">
                 {["hero", "grid", "mobile"].map((variant, vi) => (
                   d.previews?.[vi] ? (
                     <img
                       key={variant}
                       src={d.previews[vi]}
-                      alt={`${d.name} — ${variant} view`}
+                      alt=""
                       loading="lazy"
                       className={`preview-mock preview-mock-${variant}`}
                     />
@@ -1881,6 +1900,7 @@ export default function App() {
                 <span className="contact-platform">{c.platform}</span>
               </span>
               <Arrow />
+              {c.platform !== "Email" && <span className="sr-only">(opens in new tab)</span>}
             </a>
           ))}
         </div>
@@ -1937,6 +1957,7 @@ export default function App() {
           className={`ctx-menu${ctxMenu.ready ? " ready" : ""}`}
           style={{ left: ctxMenu.x, top: ctxMenu.y }}
           role="menu"
+          aria-label="Quick actions"
         >
           <a href="#contact" className="ctx-item" role="menuitem" onClick={closeCtxMenu}>Start a project</a>
           <a href="#work"    className="ctx-item" role="menuitem" onClick={closeCtxMenu}>See my work</a>
