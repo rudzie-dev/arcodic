@@ -324,7 +324,7 @@
     background: radial-gradient(circle, rgba(214,52,8,.4) 0%, transparent 70%);
     filter: blur(90px);
     will-change: transform;
-    animation: heroGlowDrift 22s var(--ease-spring) infinite alternate;
+    animation: heroGlowDrift 11s var(--ease-spring) infinite alternate;
   }
   @media (prefers-reduced-motion: reduce) {
     .hero::before { animation: none; }
@@ -1177,8 +1177,16 @@
     .ctx-sep { background: rgba(0,0,0,.1); }
     .ctx-foot { color: rgba(0,0,0,.35); }
 
-    /* ── hero: was always-dark, now matches the paper sections ── */
-    .hero::before { background: radial-gradient(circle, rgba(214,52,8,.28) 0%, transparent 70%); }
+    /* ── hero: was always-dark, now matches the paper sections ──
+       Plain alpha (the dark-mode approach) washes out badly on white —
+       light overlays desaturate hard against a light base, the opposite
+       problem from the dock's white sheen needing alpha on black. On
+       white, multiply is the right tool: it reads as the orange itself
+       rather than a faded tint, so it can carry real presence again. */
+    .hero::before {
+      background: radial-gradient(circle, rgba(214,52,8,.9) 0%, transparent 70%);
+      mix-blend-mode: multiply;
+    }
     .hero-kicker { color: rgba(0,0,0,.55); }
     .hero-wordmark { color: #000000; }
     .hero-rule { background: var(--line); }
