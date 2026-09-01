@@ -24,26 +24,27 @@
     Accent red stays consistent across both modes.
   */
   :root {
-    --ink:    #101010;
-    --paper:  #F1EDE6;
-    --dim:    #878075;
-    --dim-on-paper: #6B6460; /* --dim only hits 3.35:1 on --paper — fails AA (4.5:1) for
-                                 normal-size body text. Use this on paper-bg sections instead;
-                                 it's the same colour the light-mode override already proved
-                                 works (4.97:1), just applied unconditionally. */
-    --line:   rgba(16,16,16,.07);
-    --red:    #D63408;
-    --red-ink: #B82C06; /* --red only hits 4.13:1 on --paper — fails AA (4.5:1) for
-                            normal-size text. Use this for small red text on paper;
-                            large text (headings, the sprint numeral) is fine with --red. */
+    --ink:    #000000;
+    --paper:  #FFFFFF;
+    --dim:    #6B6460; /* was Stone Grey #878075 — that only hit 3.35:1 on white (fails AA
+                           4.5:1) and was already dead code (nothing referenced var(--dim)
+                           directly). This is the grey that was actually shipping everywhere
+                           via --dim-on-paper; consolidated so the token isn't lying. Still
+                           only 3.62:1 on pure black, so it's paper-safe, not ink-safe — small
+                           text on a dark section needs a lighter grey, not this one. */
+    --dim-on-paper: #6B6460;
+    --line:   rgba(0,0,0,.07);
+    --red:    #D63408; /* 4.82:1 on pure white — passes AA on its own now; --red-ink's
+                           darkening was only needed against the old off-white #F1EDE6 (4.13:1) */
+    --red-ink: #B82C06;
     --ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --logo:   'Cal Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --ease-spring: cubic-bezier(.34,1.2,.64,1);
     --ease-out:    cubic-bezier(.22,1,.36,1);
 
     /* dark mode scrollbar tint (default) */
-    --scrollbar-thumb: rgba(241,237,230,.14);
-    --scrollbar-thumb-hover: rgba(241,237,230,.32);
+    --scrollbar-thumb: rgba(255,255,255,.14);
+    --scrollbar-thumb-hover: rgba(255,255,255,.32);
   }
 
   html { scroll-behavior: smooth; }
@@ -73,7 +74,7 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-button { display: none; height: 0; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(241,237,230,.14);
+    background: rgba(255,255,255,.14);
     border-radius: 999px;
     border: 1px solid transparent;
     background-clip: padding-box;
@@ -83,7 +84,7 @@
     background: var(--red);
     background-clip: padding-box;
   }
-  * { scrollbar-width: thin; scrollbar-color: rgba(241,237,230,.14) transparent; }
+  * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.14) transparent; }
 
   /* ─── SCROLL PROGRESS BAR ───────────────── */
   .progress {
@@ -137,7 +138,7 @@
   .dock {
     height: 52px; width: 482px;
     border-radius: 999px;
-    background: rgba(16,16,16,.68);
+    background: rgba(0,0,0,.68);
     backdrop-filter: blur(32px) saturate(1.9);
     -webkit-backdrop-filter: blur(32px) saturate(1.9);
     border: 1px solid rgba(255,255,255,.11);
@@ -277,7 +278,7 @@
     position: fixed; z-index: 900;
     min-width: 200px; padding: 6px;
     border-radius: 14px;
-    background: rgba(16,16,16,.82);
+    background: rgba(0,0,0,.82);
     backdrop-filter: blur(28px) saturate(1.8);
     -webkit-backdrop-filter: blur(28px) saturate(1.8);
     border: 1px solid rgba(255,255,255,.11);
@@ -323,7 +324,7 @@
     background: radial-gradient(circle, rgba(214,52,8,.4) 0%, transparent 70%);
     filter: blur(90px);
     will-change: transform;
-    animation: heroGlowDrift 22s var(--ease-spring) infinite alternate;
+    animation: heroGlowDrift 11s var(--ease-spring) infinite alternate;
   }
   @media (prefers-reduced-motion: reduce) {
     .hero::before { animation: none; }
@@ -590,7 +591,7 @@
     letter-spacing: .12em; text-transform: uppercase;
     color: var(--dim-on-paper);
   }
-  .sprint-steps-sep { color: rgba(16,16,16,.35); font-size: 10px; }
+  .sprint-steps-sep { color: rgba(0,0,0,.35); font-size: 10px; }
   .sprint-steps-live { color: var(--red-ink); }
   .sprint-right { padding: 96px 64px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
   .sprint-h {
@@ -962,7 +963,7 @@
       position: absolute; bottom: calc(100% + 12px); left: 50%;
       width: 190px; padding: 8px;
       border-radius: 20px;
-      background: rgba(16,16,16,.82);
+      background: rgba(0,0,0,.82);
       backdrop-filter: blur(28px) saturate(1.8);
       -webkit-backdrop-filter: blur(28px) saturate(1.8);
       border: 1px solid rgba(255,255,255,.11);
@@ -1128,78 +1129,86 @@
 
     /* ── scrollbar — dark thumb on light track, red on hover ── */
     ::-webkit-scrollbar-thumb {
-      background: rgba(16,16,16,.18);
+      background: rgba(0,0,0,.18);
     }
     ::-webkit-scrollbar-thumb:hover {
       background: var(--red);
     }
-    * { scrollbar-color: rgba(16,16,16,.18) transparent; }
+    * { scrollbar-color: rgba(0,0,0,.18) transparent; }
 
     /* ── dock: light glass pill ── */
     .dock {
-      background: rgba(241,237,230,.75);
-      border-color: rgba(16,16,16,.12);
-      box-shadow: 0 4px 24px rgba(16,16,16,.1), inset 0 1px 0 rgba(255,255,255,.7);
+      background: rgba(255,255,255,.75);
+      border-color: rgba(0,0,0,.12);
+      box-shadow: 0 4px 24px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.7);
     }
-    .dock-logo { color: #101010; }
-    .dock-sep  { background: rgba(16,16,16,.12); }
-    .dock-a    { color: rgba(16,16,16,.5); }
-    .dock-a:hover { color: #101010; }
-    .dock-a::after { background: rgba(16,16,16,.6); }
-    .dock-cta  { background: #101010; color: #F1EDE6; }
+    .dock-logo { color: #000000; }
+    .dock-sep  { background: rgba(0,0,0,.12); }
+    .dock-a    { color: rgba(0,0,0,.5); }
+    .dock-a:hover { color: #000000; }
+    .dock-a::after { background: rgba(0,0,0,.6); }
+    .dock-cta  { background: #000000; color: #FFFFFF; }
     .dock-cta:hover { background: var(--red); color: #fff; }
     /* liquid glass highlights flip to a dark tint here — white-on-
        white barely reads, same reason the dark dock's version isn't
        a blend mode: needs its own formula per background, not a
        blend trick that quietly breaks on the other theme */
-    .dock::after { background: linear-gradient(115deg, transparent 35%, rgba(16,16,16,.06) 48%, transparent 62%); }
-    .dock-glow { background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(16,16,16,.1), transparent 68%); }
-    .dock-ripple { background: radial-gradient(circle, rgba(16,16,16,.18) 0%, rgba(16,16,16,.05) 45%, transparent 72%); }
+    .dock::after { background: linear-gradient(115deg, transparent 35%, rgba(0,0,0,.06) 48%, transparent 62%); }
+    .dock-glow { background: radial-gradient(160px circle at var(--gx, 50%) var(--gy, 50%), rgba(0,0,0,.1), transparent 68%); }
+    .dock-ripple { background: radial-gradient(circle, rgba(0,0,0,.18) 0%, rgba(0,0,0,.05) 45%, transparent 72%); }
     /* mobile burger + menu: dark lines/text on the light glass pill */
-    .dock-burger span { background: rgba(16,16,16,.7); }
+    .dock-burger span { background: rgba(0,0,0,.7); }
     .dock-mobile-menu {
-      background: rgba(241,237,230,.92);
-      border-color: rgba(16,16,16,.12);
-      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+      background: rgba(255,255,255,.92);
+      border-color: rgba(0,0,0,.12);
+      box-shadow: 0 12px 40px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.7);
     }
-    .dock-mobile-a { color: rgba(16,16,16,.65); }
-    .dock-mobile-a:hover, .dock-mobile-a:active { background: rgba(214,52,8,.12); color: #101010; }
+    .dock-mobile-a { color: rgba(0,0,0,.65); }
+    .dock-mobile-a:hover, .dock-mobile-a:active { background: rgba(214,52,8,.12); color: #000000; }
 
     /* ── context menu: light glass card ── */
     .ctx-menu {
-      background: rgba(241,237,230,.92);
-      border-color: rgba(16,16,16,.12);
-      box-shadow: 0 12px 40px rgba(16,16,16,.14), inset 0 1px 0 rgba(255,255,255,.7);
+      background: rgba(255,255,255,.92);
+      border-color: rgba(0,0,0,.12);
+      box-shadow: 0 12px 40px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.7);
     }
-    .ctx-item { color: rgba(16,16,16,.65); }
-    .ctx-item:hover { background: rgba(214,52,8,.12); color: #101010; }
-    .ctx-sep { background: rgba(16,16,16,.1); }
-    .ctx-foot { color: rgba(16,16,16,.35); }
+    .ctx-item { color: rgba(0,0,0,.65); }
+    .ctx-item:hover { background: rgba(214,52,8,.12); color: #000000; }
+    .ctx-sep { background: rgba(0,0,0,.1); }
+    .ctx-foot { color: rgba(0,0,0,.35); }
 
-    /* ── hero: was always-dark, now matches the paper sections ── */
-    .hero::before { background: radial-gradient(circle, rgba(214,52,8,.28) 0%, transparent 70%); }
-    .hero-kicker { color: rgba(16,16,16,.55); }
-    .hero-wordmark { color: #101010; }
+    /* ── hero: was always-dark, now matches the paper sections ──
+       Plain alpha (the dark-mode approach) washes out badly on white —
+       light overlays desaturate hard against a light base, the opposite
+       problem from the dock's white sheen needing alpha on black. On
+       white, multiply is the right tool: it reads as the orange itself
+       rather than a faded tint, so it can carry real presence again. */
+    .hero::before {
+      background: radial-gradient(circle, rgba(214,52,8,.9) 0%, transparent 70%);
+      mix-blend-mode: multiply;
+    }
+    .hero-kicker { color: rgba(0,0,0,.55); }
+    .hero-wordmark { color: #000000; }
     .hero-rule { background: var(--line); }
     .hero-desc { color: var(--dim-on-paper); }
-    .hero-desc b { color: #101010; }
+    .hero-desc b { color: #000000; }
     /* btn-white/btn-ghost are hero-only — a white pill on a now-light
        hero would vanish, so they swap roles: solid-dark primary,
        dark-tinted ghost, same pattern .btn-dark already uses on Sprint */
-    .btn-white       { background: #101010; color: var(--paper); }
+    .btn-white       { background: #000000; color: var(--paper); }
     .btn-white:hover { background: var(--red); color: #fff; }
-    .btn-ghost       { background: rgba(16,16,16,.06); color: rgba(16,16,16,.55); }
-    .btn-ghost:hover { background: rgba(16,16,16,.1); color: #101010; }
+    .btn-ghost       { background: rgba(0,0,0,.06); color: rgba(0,0,0,.55); }
+    .btn-ghost:hover { background: rgba(0,0,0,.1); color: #000000; }
 
     /* ── work (was always-dark) ── */
     .work-section { background: var(--paper); color: var(--ink); }
     .section-kicker { color: var(--dim-on-paper); }
     .project-row, .project-row:last-child { border-color: var(--line); }
     .project-tag { color: var(--dim-on-paper); }
-    .project-row:hover .project-tag { color: rgba(16,16,16,.35); }
-    .project-name { color: rgba(16,16,16,.85); }
-    .project-row:hover .project-name { color: #101010; }
-    .project-arrow { color: rgba(16,16,16,.45); }
+    .project-row:hover .project-tag { color: rgba(0,0,0,.35); }
+    .project-name { color: rgba(0,0,0,.85); }
+    .project-row:hover .project-name { color: #000000; }
+    .project-arrow { color: rgba(0,0,0,.45); }
     .project-result { color: var(--dim-on-paper); }
     /* project-thumb tiles keep their own brand-gradient colours —
        self-contained, reads fine against either section tone */
@@ -1214,28 +1223,28 @@
        .statement-h is shared with Pricing's headline (inherits colour
        from whichever section it's in), so this stays scoped to
        .statement rather than touching the bare class. */
-    .statement { background: #101010; color: #F1EDE6; border-bottom-color: rgba(255,255,255,.06); }
-    .statement .statement-h     { color: #F1EDE6; }
-    .statement .statement-h em  { color: rgba(241,237,230,.55); }
-    .statement-note  { color: rgba(241,237,230,.6); }
+    .statement { background: #000000; color: #FFFFFF; border-bottom-color: rgba(255,255,255,.06); }
+    .statement .statement-h     { color: #FFFFFF; }
+    .statement .statement-h em  { color: rgba(255,255,255,.55); }
+    .statement-note  { color: rgba(255,255,255,.6); }
 
     /* ── sprint (was the always-light "paper" section) — same flip ── */
-    .sprint-section  { background: #101010; color: #F1EDE6; border-bottom-color: rgba(255,255,255,.06); }
+    .sprint-section  { background: #000000; color: #FFFFFF; border-bottom-color: rgba(255,255,255,.06); }
     .sprint-left     { border-color: rgba(255,255,255,.08); } /* border-right desktop, border-bottom mobile */
-    .sprint-num      { color: #F1EDE6; }
-    .sprint-label    { color: rgba(241,237,230,.6); }
-    .sprint-steps    { color: rgba(241,237,230,.6); }
+    .sprint-num      { color: #FFFFFF; }
+    .sprint-label    { color: rgba(255,255,255,.6); }
+    .sprint-steps    { color: rgba(255,255,255,.6); }
     .sprint-steps-sep { color: rgba(255,255,255,.3); }
     .sprint-steps-live { color: #FF5A2E; } /* brighter red — sprint is now on --ink, --red-ink is too dark here */
-    .sprint-h        { color: #F1EDE6; }
-    .sprint-h em     { color: rgba(241,237,230,.55); }
-    .sprint-body     { color: rgba(241,237,230,.6); }
+    .sprint-h        { color: #FFFFFF; }
+    .sprint-h em     { color: rgba(255,255,255,.55); }
+    .sprint-body     { color: rgba(255,255,255,.6); }
     /* btn-dark was a dark pill on Sprint's light bg — Sprint is dark
        now, so it inverts to a light pill, same pattern hero's
        btn-white uses in reverse */
     .sprint-right .btn-dark {
-      background: #F1EDE6;
-      color: #101010;
+      background: #FFFFFF;
+      color: #000000;
     }
     .sprint-right .btn-dark:hover {
       background: var(--red);
@@ -1250,10 +1259,10 @@
     .pricing-section { background: var(--paper); color: var(--ink); border-bottom-color: var(--line); }
     .pricing-grid { border-color: var(--line); }
     .pricing-card {
-      background: rgba(16,16,16,.025);
+      background: rgba(0,0,0,.025);
       border-color: var(--line);
     }
-    .pricing-card:hover { background: rgba(16,16,16,.05); }
+    .pricing-card:hover { background: rgba(0,0,0,.05); }
     .pricing-card .pricing-tag    { color: var(--dim-on-paper); }
     .pricing-card .pricing-name   { color: var(--ink); }
     .pricing-card .pricing-price  { color: var(--ink); }
@@ -1264,8 +1273,8 @@
     /* featured: inverted again on top of the above — dark card,
        light text, so it's the one that pops now */
     .pricing-card.featured {
-      background: #101010;
-      border-color: #101010;
+      background: #000000;
+      border-color: #000000;
     }
     .pricing-card.featured:hover { background: #1c1c1c; }
     .pricing-card.featured .pricing-tag    { color: rgba(255,255,255,.55); }
@@ -1276,7 +1285,7 @@
     .pricing-card.featured .pricing-desc   { color: rgba(255,255,255,.5); }
     .pricing-card.featured .pricing-meta   { color: rgba(255,255,255,.55); }
     .pricing-footnote { color: var(--dim-on-paper); }
-    .pricing-footnote a { color: #101010; border-bottom-color: rgba(16,16,16,.3); }
+    .pricing-footnote a { color: #000000; border-bottom-color: rgba(0,0,0,.3); }
 
     /* ── cta / contact (was always-dark) ── */
     .cta-section {
@@ -1285,31 +1294,31 @@
         var(--paper);
     }
     .cta-section::before { background: radial-gradient(ellipse, rgba(214,52,8,.12) 0%, transparent 70%); }
-    .cta-h { color: #101010; }
+    .cta-h { color: #000000; }
     .cta-h em { color: var(--dim-on-paper); }
     .cta-sub { color: var(--dim-on-paper); }
     /* contact-card resting state — hover still swipes to solid red
        with white text/icon, which stays correct on either bg, so
        only the resting (pre-hover) colours need to flip here */
-    .contact-card { background: rgba(16,16,16,.03); border-color: var(--line); }
-    .contact-icon { color: rgba(16,16,16,.35); }
-    .contact-platform { color: rgba(16,16,16,.85); }
-    .contact-arrow { color: rgba(16,16,16,.35); }
+    .contact-card { background: rgba(0,0,0,.03); border-color: var(--line); }
+    .contact-icon { color: rgba(0,0,0,.35); }
+    .contact-platform { color: rgba(0,0,0,.85); }
+    .contact-arrow { color: rgba(0,0,0,.35); }
     @media (max-width: 768px) {
-      .contact-card:active { background: rgba(16,16,16,.06); }
+      .contact-card:active { background: rgba(0,0,0,.06); }
     }
 
     /* ── footer (was always-dark) ── */
     footer, .f-base { background: var(--paper); border-top-color: var(--line); }
-    .f-wordmark { color: rgba(16,16,16,.7); }
+    .f-wordmark { color: rgba(0,0,0,.7); }
     .f-about    { color: var(--dim-on-paper); }
     .f-h        { color: var(--dim-on-paper); }
-    .f-links a  { color: rgba(16,16,16,.6); }
-    .f-links a::after { background: rgba(16,16,16,.5); }
-    .f-links a:hover { color: #101010; }
+    .f-links a  { color: rgba(0,0,0,.6); }
+    .f-links a::after { background: rgba(0,0,0,.5); }
+    .f-links a:hover { color: #000000; }
     .f-copy     { color: var(--dim-on-paper); }
     .f-legal a  { color: var(--dim-on-paper); }
-    .f-legal a:hover { color: #101010; }
+    .f-legal a:hover { color: #000000; }
   }
 
   /* ─── ACCESSIBILITY ─────────────────────── */

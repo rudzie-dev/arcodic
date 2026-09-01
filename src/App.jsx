@@ -137,7 +137,7 @@ export default function App() {
     const footerEnd = document.querySelector(".f-base");
     const sections = [...document.querySelectorAll("[data-theme]")];
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    const THEME_COLOR = { dark: "#101010", light: "#F1EDE6" };
+    const THEME_COLOR = { dark: "#000000", light: "#FFFFFF" };
     let currentTheme = null;
 
     const onScroll = () => {
