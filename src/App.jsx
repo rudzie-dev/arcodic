@@ -394,13 +394,13 @@ export default function App() {
         <h1 className="hero-wordmark">ARCODIC</h1>
         <div className="hero-rule" />
         <div className="hero-foot">
-          <p className="hero-desc">
-            I build fast, motion-driven websites that make{" "}
+          <h2 className="hero-desc">
+            I build clean, fast websites with motion that makes{" "}
             <br />
             people stop scrolling and start clicking.{" "}
             <br />
             <b>Live in 24 hours.</b> Brief to launch.
-          </p>
+          </h2>
           <div className="hero-btns">
             <a href="#contact" className="btn btn-white">Start a project</a>
             <a href="#work"    className="btn btn-ghost">See my work</a>
