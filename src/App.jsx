@@ -335,6 +335,8 @@ export default function App() {
 
   return (
     <>
+      <a href="#main" className="skip-link">Skip to content</a>
+
       {/* Scroll progress */}
       <div className="progress" style={{ width: `${progress}%` }} />
 
@@ -388,7 +390,7 @@ export default function App() {
         </nav>
       </div>
 
-      <main>{/* ── HERO ─────────────────────────────── */}
+      <main id="main" tabIndex={-1}>{/* ── HERO ─────────────────────────────── */}
       <section className="hero" data-theme="dark">
         <p className="hero-kicker">Est. 2025</p>
         <h1 className="hero-wordmark">ARCODIC</h1>
@@ -650,13 +652,16 @@ export default function App() {
           ref={ctxMenuRef}
           className={`ctx-menu${ctxMenu.ready ? " ready" : ""}`}
           style={{ left: ctxMenu.x, top: ctxMenu.y }}
-          role="menu"
-          aria-label="Quick actions"
         >
-          <a href="#contact" className="ctx-item" role="menuitem" onClick={closeCtxMenu}>Start a project</a>
-          <a href="#work"    className="ctx-item" role="menuitem" onClick={closeCtxMenu}>See my work</a>
-          <a href="mailto:hello@arcodic.com" className="ctx-item" role="menuitem" onClick={closeCtxMenu}>Email me</a>
-          <button type="button" className="ctx-item" role="menuitem" onClick={copyPageLink}>
+          {/* No role="menu"/"menuitem" — that pattern implies arrow-key
+              navigation, which this doesn't implement. Plain links/
+              buttons with their own native semantics are correct and
+              fully keyboard-reachable via Tab as-is; a "menu" role
+              without the behavior to match it is worse than no role. */}
+          <a href="#contact" className="ctx-item" onClick={closeCtxMenu}>Start a project</a>
+          <a href="#work"    className="ctx-item" onClick={closeCtxMenu}>See my work</a>
+          <a href="mailto:hello@arcodic.com" className="ctx-item" onClick={closeCtxMenu}>Email me</a>
+          <button type="button" className="ctx-item" onClick={copyPageLink}>
             {linkCopied ? "Copied!" : "Copy link"}
           </button>
           <div className="ctx-sep" />
